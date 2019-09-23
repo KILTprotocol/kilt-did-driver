@@ -1,0 +1,9 @@
+{
+  "name": "kilt-did-driver",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/KILTprotocol/kilt-did-driver.git",
+  "author": "Maud Nalpas",
+  "license": "Apache 2.0",
+  "private": true
+}
