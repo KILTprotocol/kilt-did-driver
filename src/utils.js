@@ -12,7 +12,12 @@ async function getDidViaChain(address) {
   );
 }
 
+/* 
+input: did:kilt:5GZPvZadd2GWEZcUPEw2eentLsTZFoXjYPoozxsYJqaf6c5u
+output: 5GZPvZadd2GWEZcUPEw2eentLsTZFoXjYPoozxsYJqaf6c5u 
+*/
 function getKiltIdFromDid(did) {
+  console.log(did);
   return did.substring(PREFIX.length);
 }
 
