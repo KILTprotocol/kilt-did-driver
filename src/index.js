@@ -22,7 +22,7 @@ driver.get(URI_DID, async function(req, res) {
     });
 });
 
-driver.listen(PORT, function() {
+driver.listen(PORT, () => {
   console.log(
     "\x1b[42m\x1b[30m",
     `KILT Resolver driver active on port ${PORT} 🚀 `
