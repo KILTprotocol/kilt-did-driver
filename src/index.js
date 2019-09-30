@@ -2,16 +2,6 @@ const express = require("express");
 const { PORT, URI_DID } = require("./consts");
 const { getDidDocStorageLocation, getKiltIdFromDid } = require("./utils");
 
-// const sdk = require("@kiltprotocol/sdk-js");
-
-// todo importing full sdk???
-// todo document each function input and output
-// todo javascript vs typescript???
-// todo prep for errors: no did property, wrong did...
-// todo proper log management
-// proper setup: github hooks, linting
-// see https://services.kilt.io/contacts/5GZPvZadd2GWEZcUPEw2eentLsTZFoXjYPoozxsYJqaf6c5u
-
 const driver = express();
 
 driver.get(URI_DID, async function(req, res) {
