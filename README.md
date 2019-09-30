@@ -5,7 +5,7 @@
   
   ```bash
   node index.js
-  `
+  ```
 
 * Make a request:
   
