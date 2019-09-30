@@ -5,7 +5,7 @@ const { getDidDocStorageLocation, getKiltIdFromDid } = require("./utils");
 const driver = express();
 
 driver.get(URI_DID, async function(req, res) {
-  const did = req.params.did;
+  const { did } = req.params;
   const address = getKiltIdFromDid(did);
   const storageLocation = await getDidDocStorageLocation(address);
 
