@@ -1,5 +1,8 @@
-const sdk = require("@kiltprotocol/sdk-js");
 const express = require("express");
+const { PORT, URI_DID } = require("./consts");
+const { getDidDocStorageLocation, getKiltIdFromDid } = require("./utils");
+
+// const sdk = require("@kiltprotocol/sdk-js");
 
 // todo importing full sdk???
 // todo document each function input and output
@@ -8,38 +11,6 @@ const express = require("express");
 // todo proper log management
 // proper setup: github hooks, linting
 // see https://services.kilt.io/contacts/5GZPvZadd2GWEZcUPEw2eentLsTZFoXjYPoozxsYJqaf6c5u
-
-// server
-const PORT = 8080;
-const URI_DID = "/1.0/identifiers/:did";
-
-// node
-const NODE = "wss://full-nodes.kilt.io:9944";
-
-// did consts
-const URL_SCHEME_ID = "did";
-const KILT_METHOD_ID = "kilt";
-const PREFIX = `${URL_SCHEME_ID}:${KILT_METHOD_ID}:`;
-
-async function getDidDocStorageLocation(address) {
-  const did = await getDidViaChain(address);
-  return did.documentStore;
-}
-
-async function getDidViaChain(address) {
-  sdk.default.connect(NODE);
-  // this return value is thenable, finally will be called at last
-  return sdk.Did.queryByAddress(address).finally(() =>
-    // close chain connection
-    sdk.BlockchainApiConnection.getCached().then(blockchain => {
-      blockchain.api.disconnect();
-    })
-  );
-}
-
-function getKiltIdFromDid(did) {
-  return did.substring(PREFIX.length);
-}
 
 const driver = express();
 
@@ -59,15 +30,6 @@ driver.get(URI_DID, async function(req, res) {
       console.log(reason);
       res.sendStatus(404);
     });
-  // getDidDocStorageLocation(address)
-  //   .then(storageLocation => {
-  //     console.log("RESP", storageLocation);
-  //     return storageLocation;
-  //   })
-  //   .then(storageLocation => {
-  //     // todo https vs other... ???
-
-  //   });
 });
 
 driver.listen(PORT, function() {
