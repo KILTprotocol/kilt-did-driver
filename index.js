@@ -1,7 +1,12 @@
 const sdk = require("@kiltprotocol/sdk-js");
-// importing full sdk???
 const express = require("express");
 const driver = express();
+
+// todo importing full sdk???
+// todo document each function input and output
+// todo javascript vs typescript???
+// todo prep for errors: no did property, wrong did...
+// todo proper log management
 
 // start it:
 // node index.js
@@ -21,11 +26,6 @@ const NODE = "wss://full-nodes.kilt.io:9944";
 const URL_SCHEME_ID = "did";
 const KILT_METHOD_ID = "kilt";
 const PREFIX = `${URL_SCHEME_ID}:${KILT_METHOD_ID}:`;
-
-// todo document each function input and output
-// todo javascript vs typescript???
-// todo prep for errors
-// todo proper log management
 
 function getDidDocStorageLocation(address) {
   return getDidViaChain(address).then(response => response.documentStore);
@@ -55,8 +55,8 @@ driver.get(URI_DID, function(req, res) {
       // todo https vs other... ???
       fetch(`https:${storageLocation}`)
         .then(response => response.json())
-        // jsonResponse.did is the did document
         .then(jsonResponse => {
+          // jsonResponse.did is the did document
           const didDocumentAsJSON = JSON.stringify(jsonResponse.did);
           res.send(didDocumentAsJSON);
         })
@@ -65,19 +65,6 @@ driver.get(URI_DID, function(req, res) {
           res.sendStatus(404);
         });
     });
-
-  // const url = `${STORAGE_URL}/${address}`;
-  // fetch(url)
-  //   .then(response => response.json())
-  //   // jsonResponse.did is the did document
-  //   .then(jsonResponse => {
-  //     const didDocumentAsJSON = JSON.stringify(jsonResponse.did);
-  //     res.send(didDocumentAsJSON);
-  //   })
-  //   .catch(reason => {
-  //     console.log(reason);
-  //     res.sendStatus(404);
-  //   });
 });
 
 driver.listen(PORT, function() {
