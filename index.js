@@ -7,10 +7,7 @@ const driver = express();
 // todo javascript vs typescript???
 // todo prep for errors: no did property, wrong did...
 // todo proper log management
-
-// start it:
-// node index.js
-// curl -X GET  http://localhost:8080/1.0/identifiers/did:kilt:5GZPvZadd2GWEZcUPEw2eentLsTZFoXjYPoozxsYJqaf6c5u
+// proper setup: github hooks, linting
 
 // see https://services.kilt.io/contacts/5GZPvZadd2GWEZcUPEw2eentLsTZFoXjYPoozxsYJqaf6c5u
 
