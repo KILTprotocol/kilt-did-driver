@@ -21,6 +21,10 @@ function getKiltIdFromDid(did) {
   return did.substring(PREFIX.length);
 }
 
+function getDidDocumentFromJsonResponse(jsonResponse) {
+  return jsonResponse.did;
+}
+
 async function getDidDocStorageLocation(address) {
   const did = await getDidViaChain(address);
   return did.documentStore;
@@ -28,5 +32,6 @@ async function getDidDocStorageLocation(address) {
 
 module.exports = {
   getDidDocStorageLocation,
-  getKiltIdFromDid
+  getKiltIdFromDid,
+  getDidDocumentFromJsonResponse
 };
