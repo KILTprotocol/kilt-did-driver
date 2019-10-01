@@ -20,8 +20,7 @@
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jsdoc": "^15.9.1",
     "eslint-plugin-prettier": "^3.1.0",
-    "eslint-plugin-tsc": "^1.2.0",
     "npm-registry-client": "^8.6.0",
-    "prettier": "^1.18.3"
+    "prettier": "^1.18.2"
   }
 }
