@@ -4,7 +4,7 @@
 * Start the web server:
   
   ```bash
-  node index.js
+  node src/index.js
   ```
 
 * Make a request:
