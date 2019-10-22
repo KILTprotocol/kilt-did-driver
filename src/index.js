@@ -1,5 +1,5 @@
 const express = require("express");
-const { PORT, PROTOCOL, URI_DID } = require("./consts");
+const { PORT, STORAGE_PROTOCOL, URI_DID } = require("./consts");
 const {
   getDidDocStorageLocation,
   getDidDocumentFromJsonResponse,
@@ -13,7 +13,7 @@ driver.get(URI_DID, async function(req, res) {
   const address = getKiltIdFromDid(did);
   const storageLocation = await getDidDocStorageLocation(address);
 
-  fetch(`${PROTOCOL}:${storageLocation}`)
+  fetch(`${STORAGE_PROTOCOL}:${storageLocation}`)
     .then(response => response.json())
     .then(jsonResponse => {
       const didDocumentAsJSON = JSON.stringify(

@@ -1,8 +1,8 @@
 const sdk = require("@kiltprotocol/sdk-js");
-const { NODE, PREFIX } = require("./consts");
+const { BLOCKCHAIN_NODE, PREFIX } = require("./consts");
 
 async function getDidViaChain(address) {
-  sdk.default.connect(NODE);
+  sdk.default.connect(BLOCKCHAIN_NODE);
   // this return value is thenable, finally will be called at last
   return sdk.Did.queryByAddress(address).finally(() =>
     // close chain connection
@@ -17,7 +17,6 @@ input: did:kilt:5GZPvZadd2GWEZcUPEw2eentLsTZFoXjYPoozxsYJqaf6c5u
 output: 5GZPvZadd2GWEZcUPEw2eentLsTZFoXjYPoozxsYJqaf6c5u 
 */
 function getKiltIdFromDid(did) {
-  console.log(did);
   return did.substring(PREFIX.length);
 }
 
