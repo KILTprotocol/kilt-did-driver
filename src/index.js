@@ -1,9 +1,10 @@
 const express = require("express");
-const { PORT, STORAGE_PROTOCOL, URI_DID } = require("./consts");
+const { PORT, URI_DID } = require("./consts");
 const {
   getDidDocStorageLocation,
   getDidDocumentFromJsonResponse,
-  getKiltIdFromDid
+  getKiltIdFromDid,
+  isUrlFetchable
 } = require("./utils");
 
 const driver = express();
@@ -13,25 +14,27 @@ driver.get(URI_DID, async function(req, res) {
   const address = getKiltIdFromDid(did);
   const storageLocation = await getDidDocStorageLocation(address);
 
-  fetch(`${STORAGE_PROTOCOL}:${storageLocation}`)
-    .then(response => response.json())
-    .then(jsonResponse => {
-      const didDocumentAsJSON = JSON.stringify(
-        getDidDocumentFromJsonResponse(jsonResponse)
-      );
-      res.send(didDocumentAsJSON);
-    })
-    .catch(reason => {
-      console.log(reason);
-      res.sendStatus(404);
-    });
+  if (isUrlFetchable(storageLocation)) {
+    fetch(storageLocation)
+      .then(response => response.json())
+      .then(jsonResponse => {
+        const didDocumentAsJSON = JSON.stringify(
+          getDidDocumentFromJsonResponse(jsonResponse)
+        );
+        res.send(didDocumentAsJSON);
+      })
+      .catch(reason => {
+        console.error(reason);
+        res.sendStatus(404);
+      });
+  } else {
+    console.error(
+      `Protocol not supported. The KILT DID resolver only support fetchable URLs as DID Document location. But the storage location found for this document was "${storageLocation}".`
+    );
+    res.sendStatus(404);
+  }
 });
 
 driver.listen(PORT, () => {
-  console.log(
-    "\x1b[42m\x1b[30m",
-    `KILT Resolver driver active on port ${PORT} 🚀 `
-  );
-  // reset style
-  console.log("\x1b[0m", ``);
+  console.info(`🚀   KILT Resolver driver active on port ${PORT}...`);
 });

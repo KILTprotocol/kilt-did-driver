@@ -1,15 +1,20 @@
-const sdk = require("@kiltprotocol/sdk-js");
+const Kilt = require("@kiltprotocol/sdk-js"); // TODO granular imports
 const { BLOCKCHAIN_NODE, PREFIX } = require("./consts");
 
 async function getDidViaChain(address) {
-  sdk.default.connect(BLOCKCHAIN_NODE);
+  Kilt.default.connect(BLOCKCHAIN_NODE);
   // this return value is thenable, finally will be called at last
-  return sdk.Did.queryByAddress(address).finally(() =>
+  return Kilt.Did.queryByAddress(address).finally(() =>
     // close chain connection
-    sdk.BlockchainApiConnection.getCached().then(blockchain => {
+    Kilt.BlockchainApiConnection.getCached().then(blockchain => {
       blockchain.api.disconnect();
     })
   );
+}
+
+function isUrlFetchable(storageLocation) {
+  const fetchableUrlPattern = new RegExp("^(http|https)://");
+  return fetchableUrlPattern.test(storageLocation);
 }
 
 /* 
@@ -32,5 +37,6 @@ async function getDidDocStorageLocation(address) {
 module.exports = {
   getDidDocStorageLocation,
   getKiltIdFromDid,
-  getDidDocumentFromJsonResponse
+  getDidDocumentFromJsonResponse,
+  isUrlFetchable
 };
