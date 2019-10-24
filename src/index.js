@@ -36,5 +36,5 @@ driver.get(URI_DID, async function(req, res) {
 });
 
 driver.listen(PORT, () => {
-  console.info(`🚀   KILT Resolver driver active on port ${PORT}...`);
+  console.info(`🚀  KILT Resolver driver active on port ${PORT}...`);
 });

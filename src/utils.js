@@ -1,9 +1,8 @@
-const Kilt = require("@kiltprotocol/sdk-js"); // TODO granular imports
+const Kilt = require("@kiltprotocol/sdk-js");
 const { BLOCKCHAIN_NODE, PREFIX } = require("./consts");
 
 async function getDidViaChain(address) {
   Kilt.default.connect(BLOCKCHAIN_NODE);
-  // this return value is thenable, finally will be called at last
   return Kilt.Did.queryByAddress(address).finally(() =>
     // close chain connection
     Kilt.BlockchainApiConnection.getCached().then(blockchain => {
