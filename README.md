@@ -1,9 +1,9 @@
 # KILT DID Driver
 
 
-
 This driver resolves a given KILT Decentralzied Identifier to a DID Document.
-It can be used in the Decentralized Identity Foundation [Universal Resolver](https://github.com/decentralized-identity/universal-resolver).
+
+Among others, it can be used in the Decentralized Identity Foundation's [Universal Resolver](https://github.com/decentralized-identity/universal-resolver).
 
 ## About
 
