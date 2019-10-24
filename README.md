@@ -5,6 +5,11 @@ This driver resolves a given KILT Decentralzied Identifier to a DID Document.
 
 Among others, it can be used in the Decentralized Identity Foundation's [Universal Resolver](https://github.com/decentralized-identity/universal-resolver).
 
+<p align="center">
+<img src="https://user-images.githubusercontent.com/9762897/67467812-c33b4e00-f649-11e9-942e-9db9235cddf7.png">  
+  <div align="center"><sub>KILT Protocol - kilt.io</sub></div> 
+</p>
+
 ## About
 
 A docker container of this driver is available on [KILT Protocol's dockerhub](https://hub.docker.com/r/kiltprotocol/kilt-did-driver).
