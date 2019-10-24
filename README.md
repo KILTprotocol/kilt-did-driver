@@ -11,7 +11,7 @@ Among others, this driver can be used in the Decentralized Identity Foundation's
 
 ## About
 
-A docker container of this driver is available on [KILT Protocol's dockerhub](https://hub.docker.com/r/kiltprotocol/kilt-did-driver).
+A containerized version of this driver is available on [KILT Protocol's dockerhub](https://hub.docker.com/r/kiltprotocol/kilt-did-driver).
 
 ## Dev setup
 
