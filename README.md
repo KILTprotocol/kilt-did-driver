@@ -6,8 +6,8 @@ This driver resolves a given KILT Decentralzied Identifier to a DID Document.
 It can be used in the Decentralized Identity Foundation [Universal Resolver](https://github.com/decentralized-identity/universal-resolver).
 
 <p align="center">
-<img width="520" src="https://user-images.githubusercontent.com/9762897/67467812-c33b4e00-f649-11e9-942e-9db9235cddf7.png">  
-  <div align="center"><sub><sup>KILT Protocol - kilt.io</sup></sub></div> 
+<img src="https://user-images.githubusercontent.com/9762897/67467812-c33b4e00-f649-11e9-942e-9db9235cddf7.png">  
+  <div align="center"><sub>KILT Protocol - kilt.io</sub></div> 
 </p>
 
 ## About
