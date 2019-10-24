@@ -4,7 +4,7 @@ const KILT_METHOD_ID = "kilt";
 const PREFIX = `${URL_SCHEME_ID}:${KILT_METHOD_ID}:`;
 const URI_DID = "/1.0/identifiers/:did";
 // blockchain node
-const BLOCKCHAIN_NODE = process.env.blockchainNode;
+const BLOCKCHAIN_NODE = process.env.KILT_BLOCKCHAIN_NODE;
 // server
 const PORT = 8080;
 

@@ -1,4 +1,5 @@
 const express = require("express");
+require("dotenv").config();
 const { PORT, URI_DID } = require("./consts");
 const {
   getDidDocStorageLocation,
