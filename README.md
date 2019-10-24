@@ -1,14 +1,13 @@
 # KILT DID Driver
 
+<p align="center">
+<img src="https://user-images.githubusercontent.com/9762897/67468312-9176b700-f64a-11e9-8d88-1441380a71f6.jpg">  
+  <div align="center"><sub>KILT Protocol - kilt.io</sub></div> 
+</p>
 
 This driver resolves a given KILT Decentralized Identifier to a DID Document.
 
 Among others, it can be used in the Decentralized Identity Foundation's [Universal Resolver](https://github.com/decentralized-identity/universal-resolver).
-
-<p align="center">
-<img src="https://user-images.githubusercontent.com/9762897/67468241-70ae6180-f64a-11e9-9323-2f02fe07aab0.png">  
-  <div align="center"><sub>KILT Protocol - kilt.io</sub></div> 
-</p>
 
 ## About
 
