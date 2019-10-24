@@ -5,9 +5,9 @@
 
 # KILT DID Driver
 
-This driver resolves a given KILT Decentralized Identifier to a DID Document.
+This driver resolves a given KILT [Decentralized Identifier](https://w3c-ccg.github.io/did-spec/) to the associated DID Document.
 
-Among others, it can be used in the Decentralized Identity Foundation's [Universal Resolver](https://github.com/decentralized-identity/universal-resolver).
+Among others, this driver can be used in the Decentralized Identity Foundation's [Universal Resolver](https://github.com/decentralized-identity/universal-resolver).
 
 ## About
 
