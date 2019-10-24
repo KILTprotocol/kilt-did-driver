@@ -48,7 +48,7 @@ docker logs 16df22cc7c5f
 ```
 
 The container should be running and logs should be visible.
-To query, run:
+To query, run (note the port `49160` due to port mapping):
 
 `curl -X GET http://localhost:49160/1.0/identifiers/did:kilt:5CtPYoDuQQFLe1JU5F8KHLXkKaWxLkKH1dBAfHrUU8SoxASr`
 
@@ -99,8 +99,10 @@ docker rm <containerID>
 ### Upload the container to KILT Protocol DockerHub
 
 The Universal Resolver retrieves the DID Driver from [KILT's dockerhub](https://hub.docker.com/u/kiltprotocol).
-To update the DID Driver:
+
+To push a new version of the KILT DID Driver onto DockerHub, for use in the Universal Resolver:
 
 ```bash
+docker build -t kiltprotocol/kilt-did-driver .  
 docker push kiltprotocol/kilt-did-driver:latest
 ```
