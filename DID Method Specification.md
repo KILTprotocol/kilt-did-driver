@@ -24,8 +24,6 @@ In this specification, we'll refer to the [KILT SDK](https://github.com/KILTprot
 For convenience, a KILT DID can be created with the `Did.fromIdentity` function made available in the [KILT SDK](https://github.com/KILTprotocol/sdk-js).
 A storage location for the associated DID Document should be specified (`documentStore`).
 
-<!-- COMMENT: optional for us but we should mention it as mandatory otherwise the doc can't be retreived and so we don't respect the spec -->
-
 An entry containing the following properties may then be encoded and stored on the KILT blockchain:
 
 - `identifier`: the KILT DID identifier, e.g. `did:kilt:...`.
@@ -68,21 +66,16 @@ As mentioned in the [DID specification](https://w3c-ccg.github.io/did-spec/#prov
 
 In order to request a DID Document, its location must first be determined by querying the chain for the DID object, for example using `queryByIdentifier` (KILT SDK).
 This returned DID object contains the `documentStore` as a property.
-A standard HTTP/HTTPS fetch may be used to fetch `documentStore` and hence retrieve the associated DID Document.
-For now, only HTTP and HTTPS are supported.
-<!-- COMMENT: that's not exactly so but that's how the resolver works -->
+A standard HTTP/HTTPS fetch may be used to fetch `documentStore` and hence retrieve the associated DID Document. Other techniques might be used, depending on the storage location type.
 
 ## Operation: Update the DID Document
 
 The DID Document can be updated on the DID storage location (`documentStore`). It must be ensured that the identity operating the update is authorized to do so, e.g. by making use of the "authentication" property in the DID Document.
-<!-- COMMENT: in KILT we don't do that I guess ??? but we could. also for now we only uipload a new doc I think. -->
 
 ## Operation: Deactivate
 
 Deactivating a DID can be done the `remove` method on a DID (e.g. by using the KILT SDK's `Did.remove`).
 This sets `documentStore` to `null`, effectively unlinking a DID from its DID Document.
-<!-- COMMENT: is it enough? -->
-<!-- COMMENT: how is it set to null? -->
 
 ## Security and Privacy considerations
 
