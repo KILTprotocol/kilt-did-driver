@@ -21,19 +21,21 @@ In this specification, we'll refer to the [KILT SDK](https://github.com/KILTprot
 
 ### Create a DID
 
+KILT Blockchain nodes implement a DID module, with an `add` function.
+This function takes the following parameters:
+
+- `owner`: the public ss58 address of the caller of the method.
+- `sign_key`: the public signing key of the owner (= KILT identity corresponding to this DID).
+- `box_key`: the public encryption key of the owner (= KILT identity corresponding to this DID).
+- `doc_ref`: reference (URL) to the DID document.
+
+The blockchain node verifies the transaction signature corresponding to the owner and inserts it to the blockchain storage by using a map:
+`owner => (sign_key, box_key, doc_ref)`.
+
 For convenience, a KILT DID can be created with the `Did.fromIdentity` function made available in the [KILT SDK](https://github.com/KILTprotocol/sdk-js).
-A storage location for the associated DID Document should be specified (`documentStore`).
+The storage location for the associated DID Document should be specified (`documentStore` which will be used as `doc_ref`).
 
-An entry containing the following properties may then be encoded and stored on the KILT blockchain:
-
-- `identifier`: the KILT DID identifier, e.g. `did:kilt:...`.
-- `publicBoxKey`: the public encryption key for the KILT identity corresponding to this DID.
-- `publicSigningKey`: the public signing key for the KILT identity corresponding to this DID.
-- `documentStore`: the location where the DID Document is stored; usually a URL.
-
-The storing transaction is signed.
-
-Example of such a DID entry before encoding:
+Example of a DID created via the KILT SDK, before encoding and storage:
 
 ```javascript
 {
@@ -64,18 +66,22 @@ As mentioned in the [DID specification](https://w3c-ccg.github.io/did-spec/#prov
 
 ## Operation: Read/Resolve a DID to a DID Document
 
-In order to request a DID Document, its location must first be determined by querying the chain for the DID object, for example using `queryByIdentifier` (KILT SDK).
-This returned DID object contains the `documentStore` as a property.
+In order to request a DID Document, its location must first be determined by querying the KILT blockchain for the DID entry.
+
+For convenience, the KILT SDK functions `Did.queryByIdentifier` or `queryByAddress` can be used, and the returned DID object contains the `documentStore` as a property.
 A standard HTTP/HTTPS fetch may be used to fetch `documentStore` and hence retrieve the associated DID Document. Other techniques might be used, depending on the storage location type.
 
 ## Operation: Update the DID Document
 
-The DID Document can be updated on the DID storage location (`documentStore`). It must be ensured that the identity operating the update is authorized to do so, e.g. by making use of the "authentication" property in the DID Document.
+The DID Document can be updated on the storage that is specified as a DID storage location.
+It must be ensured that the identity operating the update is authorized to do so, e.g. by making use of the `authentication` property in the DID Document.
 
 ## Operation: Deactivate
 
-Deactivating a DID can be done the `remove` method on a DID (e.g. by using the KILT SDK's `Did.remove`).
-This sets `documentStore` to `null`, effectively unlinking a DID from its DID Document.
+Deactivating a DID can be done by using the KILT blockchain's `remove` method on a DID.
+This removes the document storage location property, effectively unlinking a DID from its DID Document.
+
+For convenience, the KILT SDK function `Did.remove` can be used.
 
 ## Security and Privacy considerations
 
