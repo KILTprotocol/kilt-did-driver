@@ -16,6 +16,7 @@ driver.get(URI_DID, async function(req, res) {
   const storageLocation = await getDidDocStorageLocation(address);
 
   if (isUrlFetchable(storageLocation)) {
+    console.error("Fetching DID Document...");
     fetch(storageLocation)
       .then(response => response.json())
       .then(jsonResponse => {
