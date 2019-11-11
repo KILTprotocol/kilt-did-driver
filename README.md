@@ -86,15 +86,6 @@ The response should be the following DID Document as JSON:
 }
 ```
 
-Other useful commands:
-
-```bash
-# list container IDs:
-docker ps
-docker kill <containerID>
-docker rm <containerID>
-```
-
 ### Upload the container to KILT Protocol DockerHub
 
 The Universal Resolver retrieves the DID Driver from [KILT's dockerhub](https://hub.docker.com/u/kiltprotocol).
@@ -104,4 +95,13 @@ To push a new version of the KILT DID Driver onto DockerHub, for use in the Univ
 ```bash
 docker build -t kiltprotocol/kilt-did-driver .  
 docker push kiltprotocol/kilt-did-driver:latest
+```
+
+### Other useful commands
+
+```bash
+# list container IDs:
+docker ps
+docker kill <containerID>
+docker rm <containerID>
 ```
