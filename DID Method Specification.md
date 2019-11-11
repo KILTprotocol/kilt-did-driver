@@ -13,7 +13,7 @@ The DID Method-specific identifier is an [ss58](https://github.com/paritytech/su
 
 ## Note
 
-KILT DIDs are stored on the KILT Protocol blockchain that is public, permissionless and by definition decentralized.
+KILT DIDs are stored on the KILT Protocol blockchain that is public and by definition decentralized.
 
 In this specification, we'll refer to the [KILT SDK](https://github.com/KILTprotocol/sdk-js) as a convenient tool to interact with the KILT blockchain. However, there is no technical constraint to use the KILT SDK for any DID-related operation.
 
