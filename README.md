@@ -99,9 +99,15 @@ docker push kiltprotocol/kilt-did-driver:latest
 
 ### Other useful commands
 
+#### Kill a container
+
 ```bash
 # list container IDs:
 docker ps
 docker kill <containerID>
 docker rm <containerID>
 ```
+
+#### Run a clean build
+
+Simply add `--no-cache` to a `docker build` command.
