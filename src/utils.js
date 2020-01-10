@@ -17,8 +17,8 @@ function isUrlFetchable(storageLocation) {
 }
 
 /* 
-input: did:kilt:5GZPvZadd2GWEZcUPEw2eentLsTZFoXjYPoozxsYJqaf6c5u
-output: 5GZPvZadd2GWEZcUPEw2eentLsTZFoXjYPoozxsYJqaf6c5u 
+input: did:kilt:5CDct4QDpQYfAVDrskNuiEdXyiE38oPfTHEJ65ZLSpz9WasE
+output: 5CDct4QDpQYfAVDrskNuiEdXyiE38oPfTHEJ65ZLSpz9WasE 
 */
 function getKiltIdFromDid(did) {
   return did.substring(PREFIX.length);
@@ -35,7 +35,7 @@ async function getDidDocStorageLocation(address) {
 
 module.exports = {
   getDidDocStorageLocation,
-  getKiltIdFromDid,
   getDidDocumentFromJsonResponse,
+  getKiltIdFromDid,
   isUrlFetchable
 };
