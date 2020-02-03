@@ -3,12 +3,7 @@ const { BLOCKCHAIN_NODE, PREFIX } = require("./consts");
 
 async function getDidViaChain(address) {
   Kilt.default.connect(BLOCKCHAIN_NODE);
-  return Kilt.Did.queryByAddress(address).finally(() =>
-    // close chain connection
-    Kilt.BlockchainApiConnection.getCached().then(blockchain => {
-      blockchain.api.disconnect();
-    })
-  );
+  return Kilt.Did.queryByAddress(address);
 }
 
 function isUrlFetchable(storageLocation) {
