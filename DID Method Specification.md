@@ -158,7 +158,7 @@ If the DID Document has been pregenerated and stored off-chain on a server (Mode
 
 ### 4.3. Other security and privacy considerations
 
-All security and privacy considerations described in the [w3c working draft](https://w3c.github.io/did-core/) are relevant in the case of KILT DIDs. They must be taken into account by applications / system developers making use of KILT DIDs.
+All security and privacy considerations described in the [w3c working draft](https://w3c.github.io/did-core/) are relevant in the case of KILT DIDs, and must be taken into account by applications / system developers making use of KILT DIDs.
 
 
 ## 5. SDK
