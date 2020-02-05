@@ -143,13 +143,17 @@ This removes the document storage location property, effectively unlinking a DID
 
 ## 4. Security and Privacy considerations
 
+### 4.1. Private key
+
 An identity that creates a DID item also effectively controls the associated DID Document.
 Hence the private key for this identity should be kept entirely private.
+
+### 4.2. DID Document tampering
 
 If the DID Document has been pregenerated and stored off-chain on a server (Mode 1 = static), it is strongly encouraged to make use of a digital signature on the DID Document to prevent data tampering:
 
 * The controller of the DID Document should send it, together with a signed hash, to the server;
-* The server should verify this signature on create and update the DID Document;
+* The server should verify this signature on create events and update events on the DID Document;
 * Any consumer of the DID Document, such as an entity accessing the off-chain DID Document in order to establish a secure communication channel with the given DID Subject, should verify the signature as well.
 
 ## 5. SDK
