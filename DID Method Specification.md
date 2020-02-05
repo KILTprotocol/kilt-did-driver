@@ -156,6 +156,11 @@ If the DID Document has been pregenerated and stored off-chain on a server (Mode
 * The server should verify this signature on create events and update events on the DID Document;
 * Any consumer of the DID Document, such as an entity accessing the off-chain DID Document in order to establish a secure communication channel with the given DID Subject, should verify the signature as well.
 
+### 4.3. Other security and privacy considerations
+
+All security and privacy considerations described in the [w3c working draft](https://w3c.github.io/did-core/) are relevant in the case of KILT DIDs. They must be taken into account by applications / system developers making use of KILT DIDs.
+
+
 ## 5. SDK
 
 The [KILT SDK](https://github.com/KILTprotocol/sdk-js) is a convenient tool to interact with the KILT blockchain. There is no technical constraint to use the KILT SDK to use KILT DIDs.
