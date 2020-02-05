@@ -127,7 +127,16 @@ As stated in the [DID specification](https://w3c-ccg.github.io/did-spec/#proving
 
 Query the KILT blockchain for the DID item => Get the DID Document's storage location from the DID item (doc_ref) => Fetch the DID Document at the specified location.
 
-Note: a standard HTTP/HTTPS fetch may be used to retrieve the associated DID Document, but other techniques might need to be used depending on the storage location type.
+Once the chain query result is received, it should first be converted to JSON.
+Decoding can be done as follows:
+
+```
+publicSigningKey: resultAsJSON[0]
+publicBoxKey: resultAsJSON[1]
+documentStore = hexadecimal to string of resultAsJSON[2]
+```
+
+Once the DID Document's storage location is determined, a standard HTTP/HTTPS fetch _may_ be used to retrieve the associated DID Document. Yet depending on the storage location type, other techniques might need to be used.
 
 * (Mode 2 = dynamic) In this mode, a DID Document can be generated on-the-fly by a DID subject and sent to any requesting entity as needed. The DID Document can be generated from a KILT Identity or by using the template provided in `§3.1.2 Create (and optionally store) the associated DID Document` in this specification document.
 
