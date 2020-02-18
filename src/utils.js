@@ -1,22 +1,15 @@
+const { Did } = require("@kiltprotocol/sdk-js");
 const Kilt = require("@kiltprotocol/sdk-js");
-const { BLOCKCHAIN_NODE, PREFIX } = require("./consts");
+const { BLOCKCHAIN_NODE } = require("./consts");
 
 async function getDidViaChain(address) {
   Kilt.default.connect(BLOCKCHAIN_NODE);
-  return Kilt.Did.queryByAddress(address);
+  return Did.queryByAddress(address);
 }
 
 function isUrlFetchable(storageLocation) {
   const fetchableUrlPattern = new RegExp("^(http|https)://");
   return fetchableUrlPattern.test(storageLocation);
-}
-
-/* 
-input: did:kilt:5CDct4QDpQYfAVDrskNuiEdXyiE38oPfTHEJ65ZLSpz9WasE
-output: 5CDct4QDpQYfAVDrskNuiEdXyiE38oPfTHEJ65ZLSpz9WasE 
-*/
-function getKiltIdFromDid(did) {
-  return did.substring(PREFIX.length);
 }
 
 function getDidDocumentFromJsonResponse(jsonResponse) {
@@ -31,6 +24,5 @@ async function getDidDocStorageLocation(address) {
 module.exports = {
   getDidDocStorageLocation,
   getDidDocumentFromJsonResponse,
-  getKiltIdFromDid,
   isUrlFetchable
 };

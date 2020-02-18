@@ -27,10 +27,43 @@ A containerized version of this driver is available on [KILT Protocol's dockerhu
 - Make a request:
 
   ```bash
-  curl -X GET http://localhost:8080/1.0/identifiers/did:kilt:5CDct4QDpQYfAVDrskNuiEdXyiE38oPfTHEJ65ZLSpz9WasE
-  # expected output: DID Document as JSON:
-    {"id":"did:kilt:5CDct4QDpQYfAVDrskNuiEdXyiE38oPfTHEJ65ZLSpz9WasE","authentication":{"type":"Ed25519SignatureAuthentication2018","publicKey":["did:kilt:5CDct4QDpQYfAVDrskNuiEdXyiE38oPfTHEJ65ZLSpz9WasE#key-1"]},"publicKey":[{"id":"did:kilt:5CDct4QDpQYfAVDrskNuiEdXyiE38oPfTHEJ65ZLSpz9WasE#key-1","type":"Ed25519VerificationKey2018","controller":"did:kilt:5CDct4QDpQYfAVDrskNuiEdXyiE38oPfTHEJ65ZLSpz9WasE","publicKeyHex":"0x06cc7535ee1ea0f552085215de0424af463a28f41c7b72fe2bd877d92a95d021"},{"id":"did:kilt:5CDct4QDpQYfAVDrskNuiEdXyiE38oPfTHEJ65ZLSpz9WasE#key-2","type":"X25519Salsa20Poly1305Key2018","controller":"did:kilt:5CDct4QDpQYfAVDrskNuiEdXyiE38oPfTHEJ65ZLSpz9WasE","publicKeyHex":"0xf93b411bc9f56a27c7b248dc5065391883d8cc412aac05084313bfcf9ab4e803"}],"@context":"https://w3id.org/did/v1","service":[{"type":"KiltMessagingService","serviceEndpoint":"//services.kilt.io:443/messaging"}]}
+  curl -X GET http://localhost:8080/1.0/identifiers/did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT
   ```
+
+Expected output: DID Document as JSON:
+
+```json
+{
+  "id": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT",
+  "@context": "https://w3id.org/did/v1",
+  "authentication": {
+    "type": "Ed25519SignatureAuthentication2018",
+    "publicKey": [
+      "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT#key-1"
+    ]
+  },
+  "publicKey": [
+    {
+      "id": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT#key-1",
+      "type": "Ed25519VerificationKey2018",
+      "controller": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT",
+      "publicKeyHex": "0xb973dbeb639d1ccbe143c3f38e95afbc9951b6bc2bc865ab3fe1fa0dacd92816"
+    },
+    {
+      "id": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT#key-2",
+      "type": "X25519Salsa20Poly1305Key2018",
+      "controller": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT",
+      "publicKeyHex": "0x4a087176d183ff29cb3ddd55f3f804ef2c719232ad71ebd3dc29f47a24d91e7a"
+    }
+  ],
+  "service": [
+    {
+      "type": "KiltMessagingService",
+      "serviceEndpoint": "//services.kilt.io:443/messaging"
+    }
+  ]
+}
+```
 
 ### Run with docker
 
@@ -49,37 +82,34 @@ docker logs 16df22cc7c5f
 The container should be running and logs should be visible.
 To query, run (note the port `49160` due to port mapping):
 
-`curl -X GET http://localhost:49160/1.0/identifiers/did:kilt:5CDct4QDpQYfAVDrskNuiEdXyiE38oPfTHEJ65ZLSpz9WasE`
+`curl -X GET http://localhost:49160/1.0/identifiers/did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT`
 
-The response should be the following DID Document as JSON:
-
-
-5CDct4QDpQYfAVDrskNuiEdXyiE38oPfTHEJ65ZLSpz9WasE
+Expected output: DID Document as JSON:
 
 ```json
 {
-  "id": "did:kilt:5CDct4QDpQYfAVDrskNuiEdXyiE38oPfTHEJ65ZLSpz9WasE",
+  "id": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT",
+  "@context": "https://w3id.org/did/v1",
   "authentication": {
     "type": "Ed25519SignatureAuthentication2018",
     "publicKey": [
-      "did:kilt:5CDct4QDpQYfAVDrskNuiEdXyiE38oPfTHEJ65ZLSpz9WasE#key-1"
+      "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT#key-1"
     ]
   },
   "publicKey": [
     {
-      "id": "did:kilt:5CDct4QDpQYfAVDrskNuiEdXyiE38oPfTHEJ65ZLSpz9WasE#key-1",
+      "id": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT#key-1",
       "type": "Ed25519VerificationKey2018",
-      "controller": "did:kilt:5CDct4QDpQYfAVDrskNuiEdXyiE38oPfTHEJ65ZLSpz9WasE",
-      "publicKeyHex": "0x06cc7535ee1ea0f552085215de0424af463a28f41c7b72fe2bd877d92a95d021"
+      "controller": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT",
+      "publicKeyHex": "0xb973dbeb639d1ccbe143c3f38e95afbc9951b6bc2bc865ab3fe1fa0dacd92816"
     },
     {
-      "id": "did:kilt:5CDct4QDpQYfAVDrskNuiEdXyiE38oPfTHEJ65ZLSpz9WasE#key-2",
+      "id": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT#key-2",
       "type": "X25519Salsa20Poly1305Key2018",
-      "controller": "did:kilt:5CDct4QDpQYfAVDrskNuiEdXyiE38oPfTHEJ65ZLSpz9WasE",
-      "publicKeyHex": "0xf93b411bc9f56a27c7b248dc5065391883d8cc412aac05084313bfcf9ab4e803"
+      "controller": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT",
+      "publicKeyHex": "0x4a087176d183ff29cb3ddd55f3f804ef2c719232ad71ebd3dc29f47a24d91e7a"
     }
   ],
-  "@context": "https://w3id.org/did/v1",
   "service": [
     {
       "type": "KiltMessagingService",
