@@ -7,7 +7,7 @@
 
 This driver resolves a given KILT [Decentralized Identifier](https://w3c-ccg.github.io/did-spec/) to the associated DID Document.
 
-Among others, this driver can be used in the Decentralized Identity Foundation's [Universal Resolver](https://github.com/decentralized-identity/universal-resolver).
+Among others, this driver is used in the Decentralized Identity Foundation's [Universal Resolver](https://github.com/decentralized-identity/universal-resolver).
 
 ## About
 
@@ -21,7 +21,11 @@ A containerized version of this driver is available on [KILT Protocol's dockerhu
 - Start the web server:
 
   ```bash
-  node src/index.js
+  # run with the prod nodes
+  npm run start
+
+  # OR run with the devnet nodes
+  npm run start:devnet
   ```
 
 - Make a request:
@@ -123,11 +127,16 @@ Expected output: DID Document as JSON:
 
 The Universal Resolver retrieves the DID Driver from [KILT's dockerhub](https://hub.docker.com/u/kiltprotocol).
 
-To push a new version of the KILT DID Driver onto DockerHub, for use in the Universal Resolver:
+To push a new version of the KILT DID Driver onto DockerHub:
 
 ```bash
+# tag and push as latest (default tag)
 docker build -t kiltprotocol/kilt-did-driver .
 docker push kiltprotocol/kilt-did-driver:latest
+
+# also tag and push with a specific version number
+docker build -t kiltprotocol/kilt-did-driver:1.0.1 .
+docker push kiltprotocol/kilt-did-driver:1.0.1
 ```
 
 ### Other useful commands
