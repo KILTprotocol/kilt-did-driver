@@ -1,7 +1,8 @@
 const express = require("express");
 require("dotenv").config();
 const { Did } = require("@kiltprotocol/sdk-js");
-const { PORT, URI_DID } = require("./consts");
+const { PORT } = require("./config");
+const { URI_DID } = require("./consts");
 const {
   getDidDocStorageLocation,
   getDidDocumentFromJsonResponse,

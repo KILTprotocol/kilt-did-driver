@@ -1,6 +1,6 @@
 const { Did } = require("@kiltprotocol/sdk-js");
 const Kilt = require("@kiltprotocol/sdk-js");
-const { BLOCKCHAIN_NODE } = require("./consts");
+const { BLOCKCHAIN_NODE } = require("./config");
 
 async function getDidViaChain(address) {
   Kilt.default.connect(BLOCKCHAIN_NODE);
