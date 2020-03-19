@@ -21,10 +21,10 @@ A containerized version of this driver is available on [KILT Protocol's dockerhu
 - Start the web server:
 
   ```bash
-  # run with the prod nodes
+  # run with the prod chain
   npm run start
 
-  # OR run with the devnet nodes
+  # OR run with the devnet chain
   npm run start:devnet
   ```
 
