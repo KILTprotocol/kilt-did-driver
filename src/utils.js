@@ -16,13 +16,13 @@ function getDidDocumentFromJsonResponse(jsonResponse) {
   return jsonResponse.did;
 }
 
-async function getDidDocStorageLocation(address) {
+async function getDidDocumentStorageLocation(address) {
   const did = await getDidViaChain(address);
   return did.documentStore;
 }
 
 module.exports = {
-  getDidDocStorageLocation,
+  getDidDocumentStorageLocation,
   getDidDocumentFromJsonResponse,
   isUrlFetchable
 };

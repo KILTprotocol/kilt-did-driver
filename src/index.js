@@ -4,7 +4,7 @@ const { Did } = require("@kiltprotocol/sdk-js");
 const { PORT } = require("./config");
 const { URI_DID } = require("./consts");
 const {
-  getDidDocStorageLocation,
+  getDidDocumentStorageLocation,
   getDidDocumentFromJsonResponse,
   isUrlFetchable
 } = require("./utils");
@@ -17,7 +17,7 @@ driver.get(URI_DID, async function(req, res) {
   try {
     const address = Did.getAddressFromIdentifier(did);
     try {
-      let storageLocation = await getDidDocStorageLocation(address);
+      let storageLocation = await getDidDocumentStorageLocation(address);
       if (!isUrlFetchable(storageLocation)) {
         // workaround to mitigate the absence of the protocol scheme in the storageLocation string of KILT DID objects that were stored on chain via the demo-client
         storageLocation = `https:${storageLocation}`;
