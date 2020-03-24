@@ -12,7 +12,7 @@ const {
 const driver = express();
 
 // URI_DID is imposed by the universal-resolver
-driver.get(URI_DID, async function(req, res) {
+driver.get(URI_DID, async function getDidDocument(req, res) {
   const { did } = req.params;
   try {
     const address = Did.getAddressFromIdentifier(did);
