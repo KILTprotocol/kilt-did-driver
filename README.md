@@ -15,6 +15,12 @@ A containerized version of this driver is available on [KILT Protocol's dockerhu
 
 ## Dev setup
 
+### Install
+
+  ```bash
+  yarn
+  ```
+
 ### Run with node
 
 - (Once only: Install the required dependencies with `yarn`)
