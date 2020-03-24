@@ -130,13 +130,11 @@ The Universal Resolver retrieves the DID Driver from [KILT's dockerhub](https://
 To push a new version of the KILT DID Driver onto DockerHub:
 
 ```bash
-# tag and push as latest (default tag)
-docker build -t kiltprotocol/kilt-did-driver .
-docker push kiltprotocol/kilt-did-driver:latest
-
-# also tag and push with a specific version number
+# tag and push as latest and with specific version number
 docker build -t kiltprotocol/kilt-did-driver:1.0.1 .
+docker tag kiltprotocol/kilt-did-driver:1.0.1 kiltprotocol/kilt-did-driver:latest
 docker push kiltprotocol/kilt-did-driver:1.0.1
+docker push kiltprotocol/kilt-did-driver:latest
 ```
 
 ### Other useful commands
