@@ -11,6 +11,7 @@ const {
 
 const driver = express();
 
+// URI_DID is imposed by the universal-resolver
 driver.get(URI_DID, async function(req, res) {
   const { did } = req.params;
   try {
@@ -18,6 +19,7 @@ driver.get(URI_DID, async function(req, res) {
     try {
       let storageLocation = await getDidDocStorageLocation(address);
       if (!isUrlFetchable(storageLocation)) {
+        // workaround to mitigate the absence of the protocol scheme in the storageLocation string of KILT DID objects that were stored on chain via the demo-client
         storageLocation = `https:${storageLocation}`;
       }
       console.info("Fetching DID Document...");
