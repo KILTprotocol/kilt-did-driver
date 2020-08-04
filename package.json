@@ -3,7 +3,7 @@
   "version": "1.2.0",
   "main": "src/index.js",
   "repository": "https://github.com/KILTprotocol/kilt-did-driver.git",
-  "author": "Kilt Team",
+  "author": "KILT <info@kilt.io>",
   "license": "Apache 2.0",
   "private": true,
   "scripts": {
