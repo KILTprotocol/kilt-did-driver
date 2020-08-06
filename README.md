@@ -17,61 +17,81 @@ A containerized version of this driver is available on [KILT Protocol's dockerhu
 
 ### Install
 
-  ```bash
-  yarn
-  ```
+```bash
+yarn
+```
 
 ### Run with node
 
 - (Once only: Install the required dependencies with `yarn`)
 - Start the web server:
 
-  ```bash
-  # run with the prod chain
-  npm run start
+```bash
+# run with the prod chain
+npm run start
 
-  # OR run with the devnet chain
-  npm run start:devnet
-  ```
+# OR run with the devnet chain
+npm run start:devnet
+```
 
 - Make a request:
 
-  ```bash
-  curl -X GET http://localhost:8080/1.0/identifiers/did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT
-  ```
+```bash
+curl -X GET http://localhost:8080/1.0/identifiers/did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx
+```
 
 Expected output: DID Document as JSON:
 
 ```json
 {
-  "id": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT",
-  "@context": "https://w3id.org/did/v1",
-  "authentication": {
-    "type": "Ed25519SignatureAuthentication2018",
+  "didDocument": {
+    "@context": "https://w3id.org/did/v1",
+    "id": "did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx",
+    "service": [
+      {
+        "type": "KiltMessagingService",
+        "serviceEndpoint": "https://services.kilt.io:443/messaging"
+      }
+    ],
+    "authentication": [
+      {
+        "type": "Ed25519SignatureAuthentication2018",
+        "publicKey": [
+          "did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx#key-1"
+        ]
+      }
+    ],
     "publicKey": [
-      "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT#key-1"
+      {
+        "id": "did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx#key-1",
+        "type": "Ed25519VerificationKey2018",
+        "controller": "did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx",
+        "publicKeyHex": "0x2203a7731f1e4362cb21ff3ef7ce79204e1891fc62c4657040753283a00300d8"
+      },
+      {
+        "id": "did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx#key-2",
+        "type": "X25519Salsa20Poly1305Key2018",
+        "controller": "did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx",
+        "publicKeyHex": "0xd0a90ed3b87db1ab599bd3cc0c8e0dc7ffcf2347299a6d494567a14f06861952"
+      }
     ]
   },
-  "publicKey": [
-    {
-      "id": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT#key-1",
-      "type": "Ed25519VerificationKey2018",
-      "controller": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT",
-      "publicKeyHex": "0xb973dbeb639d1ccbe143c3f38e95afbc9951b6bc2bc865ab3fe1fa0dacd92816"
-    },
-    {
-      "id": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT#key-2",
-      "type": "X25519Salsa20Poly1305Key2018",
-      "controller": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT",
-      "publicKeyHex": "0x4a087176d183ff29cb3ddd55f3f804ef2c719232ad71ebd3dc29f47a24d91e7a"
+  "resolverMetadata": {
+    "duration": 676,
+    "identifier": "did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx",
+    "driverId": "driver-kiltprotocol/kilt-did-driver",
+    "didUrl": {
+      "didUrlString": "did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx",
+      "did": {
+        "didString": "did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx",
+        "method": "kilt",
+        "methodSpecificId": "5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx"
+      },
+      "parametersMap": {},
+      "path": ""
     }
-  ],
-  "service": [
-    {
-      "type": "KiltMessagingService",
-      "serviceEndpoint": "//services.kilt.io:443/messaging"
-    }
-  ]
+  },
+  "methodMetadata": {}
 }
 ```
 
@@ -92,40 +112,60 @@ docker logs 16df22cc7c5f
 The container should be running and logs should be visible.
 To query, run (note the port `49160` due to port mapping):
 
-`curl -X GET http://localhost:49160/1.0/identifiers/did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT`
+`curl -X GET http://localhost:49160/1.0/identifiers/did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx`
 
 Expected output: DID Document as JSON:
 
 ```json
 {
-  "id": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT",
-  "@context": "https://w3id.org/did/v1",
-  "authentication": {
-    "type": "Ed25519SignatureAuthentication2018",
+  "didDocument": {
+    "@context": "https://w3id.org/did/v1",
+    "id": "did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx",
+    "service": [
+      {
+        "type": "KiltMessagingService",
+        "serviceEndpoint": "https://services.kilt.io:443/messaging"
+      }
+    ],
+    "authentication": [
+      {
+        "type": "Ed25519SignatureAuthentication2018",
+        "publicKey": [
+          "did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx#key-1"
+        ]
+      }
+    ],
     "publicKey": [
-      "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT#key-1"
+      {
+        "id": "did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx#key-1",
+        "type": "Ed25519VerificationKey2018",
+        "controller": "did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx",
+        "publicKeyHex": "0x2203a7731f1e4362cb21ff3ef7ce79204e1891fc62c4657040753283a00300d8"
+      },
+      {
+        "id": "did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx#key-2",
+        "type": "X25519Salsa20Poly1305Key2018",
+        "controller": "did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx",
+        "publicKeyHex": "0xd0a90ed3b87db1ab599bd3cc0c8e0dc7ffcf2347299a6d494567a14f06861952"
+      }
     ]
   },
-  "publicKey": [
-    {
-      "id": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT#key-1",
-      "type": "Ed25519VerificationKey2018",
-      "controller": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT",
-      "publicKeyHex": "0xb973dbeb639d1ccbe143c3f38e95afbc9951b6bc2bc865ab3fe1fa0dacd92816"
-    },
-    {
-      "id": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT#key-2",
-      "type": "X25519Salsa20Poly1305Key2018",
-      "controller": "did:kilt:5GFs8gCumJcZDDWof5ETFqDFEsNwCsVJUj2bX7y4xBLxN5qT",
-      "publicKeyHex": "0x4a087176d183ff29cb3ddd55f3f804ef2c719232ad71ebd3dc29f47a24d91e7a"
+  "resolverMetadata": {
+    "duration": 676,
+    "identifier": "did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx",
+    "driverId": "driver-kiltprotocol/kilt-did-driver",
+    "didUrl": {
+      "didUrlString": "did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx",
+      "did": {
+        "didString": "did:kilt:5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx",
+        "method": "kilt",
+        "methodSpecificId": "5CqJa4Ct7oMeMESzehTiN9fwYdGLd7tqeirRMpGDh2XxYYyx"
+      },
+      "parametersMap": {},
+      "path": ""
     }
-  ],
-  "service": [
-    {
-      "type": "KiltMessagingService",
-      "serviceEndpoint": "//services.kilt.io:443/messaging"
-    }
-  ]
+  },
+  "methodMetadata": {}
 }
 ```
 
@@ -137,9 +177,9 @@ To push a new version of the KILT DID Driver onto DockerHub:
 
 ```bash
 # tag and push as latest and with specific version number
-docker build -t kiltprotocol/kilt-did-driver:1.0.1 .
-docker tag kiltprotocol/kilt-did-driver:1.0.1 kiltprotocol/kilt-did-driver:latest
-docker push kiltprotocol/kilt-did-driver:1.0.1
+docker build -t kiltprotocol/kilt-did-driver:1.2.0 .
+docker tag kiltprotocol/kilt-did-driver:1.2.0 kiltprotocol/kilt-did-driver:latest
+docker push kiltprotocol/kilt-did-driver:1.2.0
 docker push kiltprotocol/kilt-did-driver:latest
 ```
 
