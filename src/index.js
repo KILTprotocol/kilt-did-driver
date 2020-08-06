@@ -24,7 +24,12 @@ driver.get(URI_DID, async function getDidDocument(req, res) {
       }
       console.info("Fetching DID Document...");
       fetch(storageLocation)
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Got unexpected response from services.");
+          }
+          return response.json();
+        })
         .then(jsonResponse => {
           const didDocumentAsJSON = JSON.stringify(
             getDidDocumentFromJsonResponse(jsonResponse)
@@ -33,15 +38,15 @@ driver.get(URI_DID, async function getDidDocument(req, res) {
           res.send(didDocumentAsJSON);
         })
         .catch(err => {
-          console.error(err);
+          console.error("Error while querying services.", err);
           res.sendStatus(404);
         });
     } catch (err) {
-      console.error(err);
+      console.error("Error while querying DID document.", err);
       res.sendStatus(404);
     }
   } catch (err) {
-    console.error(err);
+    console.error("Could not query DID document.", err);
     res.sendStatus(404);
   }
 });
