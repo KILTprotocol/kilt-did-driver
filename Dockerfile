@@ -1,4 +1,4 @@
-FROM node:12-alpine
+FROM node:12.18-alpine
 ARG NODE_AUTH_TOKEN=""
 
 WORKDIR /app
