@@ -1,18 +1,14 @@
-FROM node:12.13.0-alpine
+FROM node:12-alpine
+ARG NODE_AUTH_TOKEN=""
 
-RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+WORKDIR /app
 
-WORKDIR /home/node/app
-
-COPY package.json ./
-
-COPY yarn.lock ./
-
-USER node
+COPY package.json yarn.lock ./
 
 RUN yarn install
 
-COPY --chown=node:node . .
+# copy source after installing dependencies for better caching
+COPY . .
 
 EXPOSE 8080
 
