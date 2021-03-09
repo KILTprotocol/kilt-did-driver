@@ -1,9 +1,7 @@
 const { Did } = require("@kiltprotocol/sdk-js");
 const Kilt = require("@kiltprotocol/sdk-js");
-const { BLOCKCHAIN_NODE } = require("./config");
 
 async function getDidViaChain(address) {
-  await Kilt.default.init({ address: BLOCKCHAIN_NODE })
   Kilt.default.connect();
   return Did.queryByAddress(address);
 }
@@ -19,6 +17,7 @@ function getDidDocumentFromJsonResponse(jsonResponse) {
 
 async function getDidDocumentStorageLocation(address) {
   const did = await getDidViaChain(address);
+  if (!did) return null
   return did.documentStore;
 }
 
