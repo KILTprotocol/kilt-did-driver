@@ -1,5 +1,5 @@
-const { Did } = require("@kiltprotocol/sdk-js");
-const Kilt = require("@kiltprotocol/sdk-js");
+const { Did } = require('@kiltprotocol/sdk-js');
+const Kilt = require('@kiltprotocol/sdk-js');
 
 async function getDidViaChain(address) {
   Kilt.default.connect();
@@ -7,7 +7,7 @@ async function getDidViaChain(address) {
 }
 
 function isUrlFetchable(storageLocation) {
-  const fetchableUrlPattern = new RegExp("^(http|https)://");
+  const fetchableUrlPattern = new RegExp('^(http|https)://');
   return fetchableUrlPattern.test(storageLocation);
 }
 
@@ -17,7 +17,7 @@ function getDidDocumentFromJsonResponse(jsonResponse) {
 
 async function getDidDocumentStorageLocation(address) {
   const did = await getDidViaChain(address);
-  if (!did) return null
+  if (!did) return null;
   return did.documentStore;
 }
 

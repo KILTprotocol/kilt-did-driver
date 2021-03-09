@@ -7,5 +7,5 @@ const PORT = 8080;
 
 module.exports = Object.freeze({
   BLOCKCHAIN_NODE,
-  PORT,
+  PORT
 });
