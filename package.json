@@ -18,7 +18,7 @@
     }
   },
   "dependencies": {
-    "@kiltprotocol/sdk-js": "^0.19.0",
+    "@kiltprotocol/sdk-js": "^0.20.0-rc.4",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "tweetnacl": "^1.0.0"
