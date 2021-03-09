@@ -4,5 +4,3 @@ const configOutput = dotenv.config();
 if (configOutput.error) {
   throw configOutput.error;
 }
-const { parsed: envs } = configOutput;
-module.exports = envs;
