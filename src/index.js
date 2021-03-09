@@ -1,6 +1,7 @@
 const express = require("express");
 require("dotenv").config();
 const { Did } = require("@kiltprotocol/sdk-js");
+const fetch = require("node-fetch");
 const { PORT } = require("./config");
 const { URI_DID } = require("./consts");
 const {
