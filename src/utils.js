@@ -1,8 +1,7 @@
-const { Did } = require('@kiltprotocol/sdk-js');
-const Kilt = require('@kiltprotocol/sdk-js');
+const { Did, connect } = require('@kiltprotocol/sdk-js');
 
 async function getDidViaChain(address) {
-  Kilt.default.connect();
+  connect();
   return Did.queryByAddress(address);
 }
 
