@@ -1,48 +1,67 @@
-const express = require('express');
-const { init } = require('@kiltprotocol/sdk-js');
-const Did = require('@kiltprotocol/sdk-js')
-const fetch = require('node-fetch');
-const { PORT } = require('./config');
-const { URI_DID } = require('./consts');
-const {
-  getDidDocumentStorageLocation,
-  getDidDocumentFromJsonResponse,
-  isUrlFetchable
-} = require('./utils');
-const { BLOCKCHAIN_NODE } = require('./config');
+/* eslint-disable no-restricted-syntax */
 
-const driver = express();
+const express = require('express')
 
+const { resolveDoc, exportToDidDocument, init } = require('@kiltprotocol/sdk-js')
+
+const { PORT, BLOCKCHAIN_NODE } = require('./config')
+const { URI_DID } = require('./consts')
+
+const driver = express()
+
+// WARNING: Resolution of full DIDs will fail regardless until Spiritnet will expose the DID pallet. Until then, only light DIDs can be resolved.
 async function start() {
-  await init({ address: BLOCKCHAIN_NODE });
+  await init({ address: BLOCKCHAIN_NODE })
 
   // URI_DID is imposed by the universal-resolver
   driver.get(URI_DID, async (req, res) => {
-    const { did } = req.params
-
-    let resolvedDid
+    // Catch-all for generic error 500
     try {
-      resolvedDid = await Did.resolveDoc(did)
+      console.log('--------------------')
+      console.info('\n→ Received headers:')
+      console.info(JSON.stringify(req.headers, null, 2))
+      const { did } = req.params
+
+      let resolvedDid
       // Throws if the address is not a valid checksum address
-    } catch(error) {
-      res.sendStatus(400)
-      return
-    }
+      try {
+        resolvedDid = await resolveDoc(did)
+      } catch(error) {
+        console.debug("\n⚠️ Could not resolve DID with given error:")
+        console.debug(JSON.stringify(error, null, 2))
+        res.sendStatus(400)
+        return
+      }
 
-    if (!resolvedDid) {
-      res.sendStatus(404)
-      return
-    }
+      if (!resolvedDid) {
+        console.trace(`\n🔍 DID ${did} not found (on chain)`)
+        res.sendStatus(404)
+        return
+      }
 
-    console.log(resolvedDid)
-    const exportedDidDocument = Did.exportToDidDocument(resolvedDid, 'application/json+ld')
-    console.log(exportedDidDocument)
-    res.sendStatus(200).send(exportedDidDocument)
-  });
+      console.trace('\n↑↓ Resolved DID details:')
+      console.trace(JSON.stringify(resolvedDid, null, 2))
+
+      // TODO: Include metadata when DID migration will be supported.
+      // E.g. return res.send({didDocument: Did.exportToDidDocument(resolvedDid, 'application/json+ld'), didDocumentMetadata: {a: 'a'}})
+      const exportedDidDocument = exportToDidDocument(resolvedDid, 'application/json+ld')
+
+      console.trace('\n← Exported DID document:')
+      console.trace(JSON.stringify(exportedDidDocument, null, 2))
+
+      res.send(exportedDidDocument)
+    } catch (error) {
+      console.error("\n🚨 Could not satisfy request because of the following error:")
+      console.error(JSON.stringify(error, null, 2))
+      res.sendStatus(500)
+    } finally {
+      console.log('--------------------')
+    }
+  })
 
   driver.listen(PORT, () => {
-    console.info(`🚀  KILT Resolver driver active on port ${PORT}...`);
-  });
+    console.info(`🚀 KILT DID resolver driver started and running on port ${PORT}...`)
+  })
 }
 
-start();
+start()
