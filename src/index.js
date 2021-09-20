@@ -22,10 +22,10 @@ async function start() {
       console.info(JSON.stringify(req.headers, null, 2))
       const { did } = req.params
 
-      let resolvedDid
+      let didResolutionResult
       // Throws if the address is not a valid checksum address
       try {
-        resolvedDid = await resolveDoc(did)
+        didResolutionResult = await resolveDoc(did)
       } catch(error) {
         console.debug("\n⚠️ Could not resolve DID with given error:")
         console.debug(JSON.stringify(error, null, 2))
@@ -33,18 +33,23 @@ async function start() {
         return
       }
 
-      if (!resolvedDid) {
+      if (!didResolutionResult) {
         console.trace(`\n🔍 DID ${did} not found (on chain)`)
         res.sendStatus(404)
         return
       }
 
       console.trace('\n↑↓ Resolved DID details:')
-      console.trace(JSON.stringify(resolvedDid, null, 2))
+      console.trace(JSON.stringify(didResolutionResult, null, 2))
 
-      // TODO: Include metadata when DID migration will be supported.
-      // E.g. return res.send({didDocument: Did.exportToDidDocument(resolvedDid, 'application/json+ld'), didDocumentMetadata: {a: 'a'}})
-      const exportedDidDocument = exportToDidDocument(resolvedDid, 'application/json+ld')
+      let exportedDidDocument = exportToDidDocument(didResolutionResult.details, 'application/ld+json')
+
+      if (didResolutionResult.metadata) {
+        exportedDidDocument = {
+          didDocument: exportedDidDocument,
+          didDocumentMetadata: didResolutionResult.metadata
+        }
+      }
 
       console.trace('\n← Exported DID document:')
       console.trace(JSON.stringify(exportedDidDocument, null, 2))
@@ -60,7 +65,7 @@ async function start() {
   })
 
   driver.listen(PORT, () => {
-    console.info(`🚀 KILT DID resolver driver started and running on port ${PORT}...`)
+    console.info(`🚀 KILT DID resolver driver running on port ${PORT} and connected to ${BLOCKCHAIN_NODE}...`)
   })
 }
 
