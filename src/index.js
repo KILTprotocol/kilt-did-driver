@@ -2,14 +2,13 @@
 
 const express = require('express')
 
-const { resolveDoc, exportToDidDocument, init } = require('@kiltprotocol/sdk-js')
+const { Did, init } = require('@kiltprotocol/sdk-js')
 
 const { PORT, BLOCKCHAIN_NODE } = require('./config')
 const { URI_DID } = require('./consts')
 
 const driver = express()
 
-// WARNING: Resolution of full DIDs will fail regardless until Spiritnet will expose the DID pallet. Until then, only light DIDs can be resolved.
 async function start() {
   await init({ address: BLOCKCHAIN_NODE })
 
@@ -25,7 +24,7 @@ async function start() {
       let didResolutionResult
       // Throws if the address is not a valid checksum address
       try {
-        didResolutionResult = await resolveDoc(did)
+        didResolutionResult = await Did.resolveDoc(did)
       } catch(error) {
         console.debug("\n⚠️ Could not resolve DID with given error:")
         console.debug(JSON.stringify(error, null, 2))
@@ -39,10 +38,12 @@ async function start() {
         return
       }
 
+      console.log(didResolutionResult)
+
       console.trace('\n↑↓ Resolved DID details:')
       console.trace(JSON.stringify(didResolutionResult, null, 2))
 
-      let exportedDidDocument = exportToDidDocument(didResolutionResult.details, 'application/ld+json')
+      let exportedDidDocument = Did.exportToDidDocument(didResolutionResult.details, 'application/ld+json')
 
       if (didResolutionResult.metadata) {
         exportedDidDocument = {
