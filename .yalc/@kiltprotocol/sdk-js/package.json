@@ -1,0 +1,34 @@
+{
+  "name": "@kiltprotocol/sdk-js",
+  "version": "0.24.0-15",
+  "description": "",
+  "main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
+  "files": [
+    "lib/**/*",
+    "dist/*"
+  ],
+  "scripts": {
+    "clean": "rimraf ./lib",
+    "build": "yarn clean && yarn build:ts",
+    "build:ts": "tsc --declaration -p tsconfig.build.json",
+    "bundle": "rimraf ./dist && webpack --config webpack.config.js"
+  },
+  "repository": "github:kiltprotocol/sdk-js",
+  "engines": {
+    "node": ">=14.0"
+  },
+  "author": "",
+  "license": "BSD-4-Clause",
+  "bugs": "https://github.com/KILTprotocol/sdk-js/issues",
+  "homepage": "https://github.com/KILTprotocol/sdk-js#readme",
+  "dependencies": {
+    "@kiltprotocol/chain-helpers": "0.24.0-15",
+    "@kiltprotocol/core": "0.24.0-15",
+    "@kiltprotocol/did": "0.24.0-15",
+    "@kiltprotocol/messaging": "0.24.0-15",
+    "@kiltprotocol/types": "0.24.0-15",
+    "@kiltprotocol/utils": "0.24.0-15"
+  },
+  "yalcSig": "5b91293738a5a803caca90702b6ff8af"
+}

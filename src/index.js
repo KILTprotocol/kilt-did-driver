@@ -22,7 +22,7 @@ async function start() {
       const { did } = req.params
 
       let didResolutionResult
-      // Throws if the address is not a valid checksum address
+      // Throws if the address is not a valid address
       try {
         didResolutionResult = await Did.resolveDoc(did)
       } catch(error) {
@@ -38,18 +38,19 @@ async function start() {
         return
       }
 
-      console.log(didResolutionResult)
-
       console.trace('\n↑↓ Resolved DID details:')
       console.trace(JSON.stringify(didResolutionResult, null, 2))
 
-      let exportedDidDocument = Did.exportToDidDocument(didResolutionResult.details, 'application/ld+json')
+      // In case the DID has been deleted, we return the minimum set of information,
+      // which is represented by the sole `id` property.
+      // https://www.w3.org/TR/did-core/#did-document-properties
+      const didDocument = didResolutionResult.details ?
+        Did.exportToDidDocument(didResolutionResult.details, 'application/ld+json') :
+        { id: did, '@context': ['https://www.w3.org/ns/did/v1'] }
 
-      if (didResolutionResult.metadata) {
-        exportedDidDocument = {
-          didDocument: exportedDidDocument,
-          didDocumentMetadata: didResolutionResult.metadata
-        }
+      const exportedDidDocument = {
+        didDocument,
+        didDocumentMetadata: didResolutionResult.metadata
       }
 
       console.trace('\n← Exported DID document:')
