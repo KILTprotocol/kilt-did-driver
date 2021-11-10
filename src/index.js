@@ -2,7 +2,7 @@
 
 const express = require('express')
 
-const { Did, init } = require('@kiltprotocol/sdk-js')
+const { Did, init, connect } = require('@kiltprotocol/sdk-js')
 
 const { PORT, BLOCKCHAIN_NODE } = require('./config')
 const { URI_DID } = require('./consts')
@@ -11,6 +11,7 @@ const driver = express()
 
 async function start() {
   await init({ address: BLOCKCHAIN_NODE })
+  await connect()
 
   // URI_DID is imposed by the universal-resolver
   driver.get(URI_DID, async (req, res) => {
