@@ -134,6 +134,9 @@ The information about the submitter is required to be included and signed by the
 To make it possible for the deposit payer to claim back the deposit, KILT allows not only the DID subject, but also the deposit owner for a given DID, to delete that DID from the blockchain state.
 This deposit is returned only upon deletion of the DID, to incentivise keeping on the blockchain only data that is still relevant and subsidising the removal of unnecessary storage space.
 
+> For security reasons, a full DID can only be created once. After it is deactivated, it is permanently added to a "blacklist" which prevents a DID with the same identifier from being created again.
+For more details, please visit the [Security Requirements](#security-requirements) section.
+
 ### Migrate a light DID to a full DID
 
 KILT allows a light DID to be migrated to a full DID without invalidating any of the credentials that were issued to the light DID before migration.
@@ -153,7 +156,7 @@ A full DID can be updated via a number of extrinsics that the KILT blockchain ex
 
 - `did -> setAuthenticationKey(newKey)`
 - `did -> addKeyAgreementKey(newKey)`
-- `did -> removeKeyAgreementKey(ketId)`
+- `did -> removeKeyAgreementKey(keyId)`
 - `did -> setAttestationKey(newKey)`
 - `did -> removeAttestationKey()`
 - `did -> setDelegationKey(newKey)`
@@ -171,7 +174,37 @@ The extrinsic and the signature can then be submitted by **any** KILT account to
 
 which will check the validity of the signature and the DID nonce, and proceeds to update the information as instructed in `didCall`.
 
-## Security Requirements
+## Deactivate a light DID
+
+Being entirely off-chain, a light DID can be deleted by simply deleting the private element of the DID authentication key.
+Furthermore, a light DID is also considered deactivated when it has been migrated and its full counterpart is deactivated.
+This is by design, as it is assumed that the original authentication key of the light DID might be compromised, leading to the light DID being migrated and its keys rotated.
+
+## Deactivate a full DID
+
+A full DID can be deactivated in two ways: by the DID subject, and by the KILT account that paid the deposit for the DID to be written on chain.
+
+In the first case, the DID subject needs to sign, without submitting, the following extrinsic with their authentication key:
+
+```did -> delete(endpoints_to_remove)```
+
+where `endpoints_to_remove` is a paramater required by the KILT blockchain to provide an upper limit on the extrinsic execution time.
+The parameter value match the number of service endpoints that are stored on chain under the given DID at the time of deletion.
+Providing a larger value would still be acceptable, while providing a smaller value results in a noop and an error.
+
+The signed extrinsic can then be submitted following the same process as with DID updates, i.e., by calling the `did -> submitDidCall(didCall, signature)` extrinsic with any KILT account.
+
+The second way to delete a full DID is by signing and submitting the following extrinsic:
+
+```did -> reclaim_deposit(did_subject, endpoints_to_remove)```
+
+where `did_subject` is the identifier of the full DID to delete, and `endpoints_to_remove` follows the same logic as above.
+This is an extrinsic that must be signed and submitted directly by a KILT account, without going through a DID signing process as in the case of DID updates or DID deletion.
+Nevertheless, not any KILT account can submit this extrinsic, but only the account that paid for the DID creation deposit.
+
+The result of both `did -> delete(endpoints_to_remove)` and `did -> reclaim_deposit(did_subject, endpoints_to_remove)` is that all the details associated with the DID are deleted from the chain, the DID is added to an on-chain "blacklist" to avoid creating a new DID with the same identifier (see [Security Requirements](#security-requirements)), and the deposit is returned to its initial payer.
+
+<h2 id="security-requirements">Security Requirements</h2>
 
 ## Privacy Requirements
 
