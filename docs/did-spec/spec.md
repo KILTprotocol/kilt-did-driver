@@ -151,19 +151,20 @@ Once upgraded, a light DID becomes unusable, meaning that all the operations inv
 Resolution of a KILT DID is opaque over the type of DID being resolved.
 There are two ways that KILT DIDs can be resolved: using the KILT SDK, and using the DIF Universal Resolver.
 
-In the first case, the KILT SDK exposes functions to resolve KILT DIDs referring to whole DID Documents, just a verification key, or just a service endpoint.
+In the first case, the KILT SDK exposes functions to resolve KILT DIDs referring to whole DID Documents, just a verification key by its ID, or just a service endpoint by its ID or its type.
 For more details about the functions and types provided by the KILT SDK, please visit the [official SDK documentation][kilt-did-docs].
 
 KILT also provides a resolution driver for the [DIF Universal Resolver][dif-universal-resolver].
-In this case, the result of a DID resolution follows the [W3C DID Core Specification][did-core-spec] with regard to the structure of the DID Document and the resolution metadata.
+In this case, the DID resolution process and result follow the [W3C DID Core Specification][did-core-spec] with regard to the structure of the DID Document and the resolution metadata.
 
-From the blockchain perspective, information related to a DID is stored under multiple storage maps within the `did` pallet, specifically:
+On the KILT blockchain, information related to a full DID is stored under multiple storage maps within the `did` pallet, specifically:
 
 - `did -> did(AccountId32): Option<DidDetails>`: maps from a DID identifier to its details, if present.
 An instance of `DidDetails` contains all the keys under the control of the DID subject.
-- `did -> didBlacklist(AccountId32): Option<()>`: maps from a DID identifier to an optional empty tuple indicating whether a given DID has been deleted or not.
-- `did -> serviceEndpoints(AccountId32, Bytes): Option<DidEndpoint>`: maps from the concatenation of hashed DID identifier and hashed service ID to the service endpoints details, if present.
-An instance of `DidEndpoint` contains the service details, i.e., service ID, a set of service types, and a set of service URLs.
+- `did -> didBlacklist(AccountId32): Option<()>`: maps from a DID identifier to an optional empty tuple indicating whether a given DID has been deleted (optional tuple is not null) or not (optional tuple is null).
+- `did -> serviceEndpoints(AccountId32, Vec<u8>): Option<DidEndpoint>`: maps from the concatenation of hashed DID identifier and hashed service ID to the service endpoints details, if present.
+Upon lookups, by only providing the first key, it is possible to retrieve all theAn instance of `DidEndpoint` contains the service details, i.e., service ID, a set of service types, and a set of service URLs. service IDs under a given DID identifier.
+
 
 ### Update a light DID
 
