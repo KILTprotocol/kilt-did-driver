@@ -146,6 +146,30 @@ Hence, a light DID can be migrated to a full DID and the KILT blockchain ensures
 
 Once upgraded, a light DID becomes unusable, meaning that all the operations involving authentication of the DID subject must be performed using the currently active authentication key of the full DID.
 
+### Resolve a DID
+
+Resolution of a KILT DID is opaque over the type of DID being resolved.
+There are two ways that KILT DIDs can be resolved: using the KILT SDK, and using the DIF Universal Resolver.
+
+In the first case, the KILT SDK exposes the following functions to resolve KILT DIDs:
+
+```typescript
+interface IDidResolver {
+    resolve: (didUri: string) => Promise<IDidResolvedDetails | IDidKeyDetails | IDidServiceEndpoint | null>
+    resolveDoc: (did: IDidDetails['did']) => Promise<IDidResolvedDetails | null>
+    resolveKey: (didUri: IDidKeyDetails['id']) => Promise<IDidKeyDetails | null>
+    resolveServiceEndpoint: (didUri: IDidServiceEndpoint['id']) => Promise<IDidServiceEndpoint | null>
+}
+```
+
+which respectively resolve a light or full KILT DID URI to a DID Document, a DID key, or a DID service endpoint.
+
+The KILT SDK provides a default resolver that implements the above interface and performs basic resolution, e.g., no caching.
+For more details about the functions and types provided by the KILT SDK, please visit the [official SDK documentation][kilt-did-docs].
+
+KILT also provides a resolution driver for the [DIF Universal Resolver][dif-universal-resolver].
+In this case, the result of a DID resolution follows the [W3C DID Core Specification][did-core-spec] with regard to the structure of the DID Document and the resolution metadata.
+
 ### Update a light DID
 
 A light DID does not support updates, as a change in any of the details would result in a differently encoded string which would indicate a completely different DID.
@@ -164,7 +188,7 @@ A full DID can be updated via a number of extrinsics that the KILT blockchain ex
 - `did -> addServiceEndpoint(serviceEndpoint)`
 - `did -> removeServiceEndpoint(serviceId)`
 
-As the KILT blockchain supports batching of calls, it is possible to batch multiple of these extrinsics together and update multiple fields of a full DID in a single transaction.
+As the KILT blockchain supports batching of calls, it is possible to batch multiple of these extrinsics together and update multiple fields of a full DID in a single batch transaction.
 
 The extrinsic or the batch thereof must be SCALE-encoded and signed using the authentication key of the DID being updated that is valid at the moment each transaction is evaluated.
 
@@ -211,10 +235,10 @@ The result of both `did -> delete(endpoints_to_remove)` and `did -> reclaim_depo
 ## Reference Implementations
 
 [did-core-spec]: https://www.w3.org/TR/did-core
-[kilt-did-docs]: https://kiltprotocol.github.io/docs/docs/sdk/core-feature/did
 [ss58]: https://github.com/paritytech/substrate/wiki/External-Address-Format-(SS58)
 [kilt-sdk]: https://github.com/KILTprotocol/sdk-js
 [cbor]: https://cbor.io/
 [spiritnet-polkadot]: https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fspiritnet.kilt.io%2F#/explorer
 [kilt-did-docs]: https://dev.kilt.io/docs/sdk/core-feature/did
 [blake-2]: https://www.blake2.net/
+[dif-universal-resolver]: https://dev.uniresolver.io/
