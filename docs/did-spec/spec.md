@@ -17,7 +17,7 @@
 ## Abstract
 
 This document defines a the KILT DID Method that conforms to the [DID Core W3C Spec][did-core-spec].
-A KILT Decentralised Identifier (DID) is a string uniquely identifying each KILT user that allows them to create CTypes, issue/collect attestations, and create delegation hierarchies.
+A KILT Decentralised Identifier (DID) is a string uniquely identifying entities within the KILT network, allowing them to create CTypes, issue/collect attestations, and create delegation hierarchies.
 For more information about KILT DIDs and their usage, please visit our [official documentation][kilt-did-docs].
 
 ## Method Syntax
@@ -70,7 +70,7 @@ the resulting DID will be
 `did:kilt:light:004pqDzaWi3w7TzYzGnQDyrasK6UnyNnW6JQvWRrq6r8HzNNGy:omFlomlwdWJsaWNLZXlYIORt+eYj7CPRtIZvm86eHG+s4ffdNRH+WWcsqDlPCMVeZHR5cGVmeDI1NTE5YXOBo2JpZG1teS1zZXJ2aWNlLWlkZXR5cGVzgW9teS1zZXJ2aWNlLXR5cGVkdXJsc4FubXktc2VydmljZS11cmw=`
 
 This means that the length of a light DID is directly dependent on the number of additional details that are encoded.
-For simpler cases where only an authentication key is needed, the light DID will have a structure like `did:kilt:light:004pqDzaWi3w7TzYzGnQDyrasK6UnyNnW6JQvWRrq6r8HzNNGy`, which is the equivalent of taking the long DID above and removing everything after the last `":"` or, in other terms, generate a KILT account and prepend it `did:kilt:`.
+For simpler cases where only an authentication key is needed, the light DID will have a structure like `did:kilt:light:004pqDzaWi3w7TzYzGnQDyrasK6UnyNnW6JQvWRrq6r8HzNNGy`, which is the equivalent of taking the long DID above and removing everything after the last `":"` or, in other terms, generate a KILT account and prepend it with `did:kilt:`.
 
 ### Full DIDs
 
@@ -133,7 +133,7 @@ When stored on chain, each key is stored under the identifier that is generated 
 
 The information about the submitter is required to be included and signed by the DID subject because upon the creation of a new DID on the KILT blockchain, a deposit is taken from the submitter's balance.
 To make it possible for the deposit payer to claim back the deposit, KILT allows not only the DID subject but also the deposit owner for a given DID, to delete that DID from the blockchain state.
-This deposit is returned only upon deletion of the DID, to incentivise keeping on the blockchain only data that is still relevant and subsidising the removal of unnecessary storage space.
+This deposit is returned only upon deletion of the DID to incentivise keeping data on the blockchain that is still relevant as well as to subsidise the removal of unnecessary storage items thus reducing the on-chain storage space.
 
 > For security reasons, a full DID can only be created once.
 After it is deactivated, it is permanently added to a "blacklist" which prevents a DID with the same identifier from being created again.
@@ -204,14 +204,14 @@ Specifically for resolution metadata, every DID resolution result contains docum
 </tr>
 </table>
 
-If the first case where `deactivated` is true, the resulting `didDocument` will be a minimal document containing only the `id` and `@context` properties as specified in the DID Core specification.
+In the first case where `deactivated` is true, the resulting `didDocument` will be a minimal document containing only the `id` and `@context` properties as specified in the DID Core specification.
 
 On the KILT blockchain, information related to a full DID is stored under multiple storage maps within the `did` pallet, specifically:
 
 - `did -> did(AccountId32): Option<DidDetails>`: maps from a DID identifier to its details, if present.
 An instance of `DidDetails` contains all the keys under the control of the DID subject.
 - `did -> didBlacklist(AccountId32): Option<()>`: maps from a DID identifier to an optional empty tuple indicating whether a given DID has been deleted (optional tuple is not null) or not (optional tuple is null).
-- `did -> serviceEndpoints(AccountId32, Vec<u8>): Option<DidEndpoint>`: maps from the concatenation of hashed DID identifier and hashed service ID to the service endpoints details, if present.
+- `did -> serviceEndpoints(AccountId32, Vec<u8>): Option<DidEndpoint>`: maps from the concatenation of hashed DID identifier and hashed service ID to the details of a service endpoint, if present.
 Upon lookups, by only providing the first key, it is possible to retrieve all the service IDs under a given DID identifier.
 An instance of `DidEndpoint` contains the service details, i.e., service ID, a set of service types, and a set of service URLs.
 
@@ -306,8 +306,8 @@ This ensures that nobody can submit the DID creation operation on behalf of the 
 
 ## Denial-of-Service
 
-The almost totality of extrinsics are subject to a fee, comparable to the concept of gas in the Ethereum ecosystem, which has real-world monetary value.
-Hence, attempts to spam the blockchain with bogus transactions will either be blocked by a node before being included in a block, thus reducing the effect of such action, or they will result in an error but in the payment of a dispatch fee which, eventually, will lead to resource exhaustion for the attacker's account.
+The blockchain transactions (extrinsics) are subject to a fee depending on their raw length, on-chain computational intensity and storage requirements, similarly to the concept of gas in the Ethereum ecosystem, which represents real-world monetary value.
+Hence, attempts to spam the blockchain with bogus transactions will either be blocked by a node before being included in a block, thus reducing the effect of such an attack, or they will result in an error while the attacker still needs to pay a transaction dispatch fee which, eventually, would exhaust the attacker resources.
 
 ## Operations integrity and authenticity
 
