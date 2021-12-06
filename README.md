@@ -9,7 +9,7 @@ Among others, this driver is used in the Decentralized Identity Foundation's [Un
 
 ## About
 
-A containerized version of this driver is available on [KILT Protocol's dockerhub](https://hub.docker.com/r/kiltprotocol/kilt-did-driver).
+A containerised version of this driver is available on [KILT Protocol's dockerhub](https://hub.docker.com/r/kiltprotocol/kilt-did-driver).
 
 ## Dev setup
 
@@ -21,15 +21,15 @@ yarn
 
 ### Run with node
 
-- (Once only: Install the required dependencies with `yarn`)
+- (Once only) Install the required dependencies with `yarn`
 - Start the web server:
 
 ```bash
 # run with the prod chain
-npm run start
+yarn start
 
 # OR run with the devnet chain
-npm run start:devnet
+yarn start:devnet
 ```
 
 - Make a request:
