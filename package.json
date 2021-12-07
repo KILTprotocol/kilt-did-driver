@@ -9,7 +9,7 @@
   "scripts": {
     "lint": "eslint 'src/**'",
     "start": "node src/index.js",
-    "start:devnet": "env-cmd -f .env.devnet node src/index.js"
+    "start:testnet": "env-cmd -f .env.testnet node src/index.js"
   },
   "husky": {
     "hooks": {
