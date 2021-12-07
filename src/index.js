@@ -1,5 +1,3 @@
-/* eslint-disable no-restricted-syntax */
-
 const express = require('express')
 
 const { Did, init, connect } = require('@kiltprotocol/sdk-js')
@@ -27,8 +25,8 @@ async function start() {
       try {
         didResolutionResult = await Did.resolveDoc(did)
       } catch(error) {
-        console.debug("\n⚠️ Could not resolve DID with given error:")
-        console.debug(JSON.stringify(error, null, 2))
+        console.info("\n⚠️ Could not resolve DID with given error:")
+        console.info(JSON.stringify(error, null, 2))
         res.sendStatus(400)
         return
       }
