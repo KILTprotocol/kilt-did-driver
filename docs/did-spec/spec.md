@@ -215,7 +215,7 @@ An instance of `DidDetails` contains all the keys under the control of the DID s
 Upon lookups, by only providing the first key, it is possible to retrieve all the service IDs under a given DID identifier.
 An instance of `DidEndpoint` contains the service details, i.e., service ID, a set of service types, and a set of service URLs.
 
-> The validity and authenticity of the information stored on the blockchain are guaranteed by the same blockchain, which verifies that all DID management operations other than creation are signed by the DID authentication key, as described in the section relative to each operation.
+> The validity and authenticity of the information stored on the KILT blockchain are guaranteed by the same blockchain, which verifies that all DID management operations other than creation are signed by the DID authentication key, as described in the section relative to each operation.
 
 
 ### Update a light DID
