@@ -1,5 +1,6 @@
 FROM node:14
 ARG NODE_AUTH_TOKEN=""
+ARG SERVICE_PORT=8080
 
 WORKDIR /app
 
@@ -10,6 +11,6 @@ RUN yarn install
 # copy source after installing dependencies for better caching
 COPY . .
 
-EXPOSE 8080
+EXPOSE ${SERVICE_PORT}
 
 CMD [ "node", "src/index.js" ]
