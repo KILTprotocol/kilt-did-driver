@@ -4,7 +4,7 @@
   "main": "src/index.js",
   "repository": "https://github.com/KILTprotocol/kilt-did-driver.git",
   "author": "KILT <info@kilt.io>",
-  "license": "Apache 2.0",
+  "license": "BSD-4-Clause",
   "private": true,
   "scripts": {
     "lint": "eslint 'src/**'",
