@@ -1,66 +1,80 @@
-const express = require('express');
-const { Did, init } = require('@kiltprotocol/sdk-js');
-const fetch = require('node-fetch');
-const { PORT } = require('./config');
-const { URI_DID } = require('./consts');
-const {
-  getDidDocumentStorageLocation,
-  getDidDocumentFromJsonResponse,
-  isUrlFetchable
-} = require('./utils');
-const { BLOCKCHAIN_NODE } = require('./config');
+/**
+ * Copyright 2018-2021 BOTLabs GmbH.
+ *
+ * This source code is licensed under the BSD 4-Clause "Original" license
+ * found in the LICENSE file in the root directory of this source tree.
+ */
 
-const driver = express();
+const express = require('express')
+
+const { Did, init, connect } = require('@kiltprotocol/sdk-js')
+
+const { PORT, BLOCKCHAIN_NODE } = require('./config')
+const { URI_DID } = require('./consts')
+
+const driver = express()
 
 async function start() {
-  await init({ address: BLOCKCHAIN_NODE });
+  await init({ address: BLOCKCHAIN_NODE })
+  await connect()
 
   // URI_DID is imposed by the universal-resolver
-  driver.get(URI_DID, async function getDidDocument(req, res) {
-    const { did } = req.params;
+  driver.get(URI_DID, async (req, res) => {
+    // Catch-all for generic error 500
     try {
-      const address = Did.getAddressFromIdentifier(did);
+      console.log('--------------------')
+      console.info('\n→ Received headers:')
+      console.info(JSON.stringify(req.headers, null, 2))
+      const { did } = req.params
+
+      let didResolutionResult
+      // Throws if the address is not a valid address
       try {
-        let storageLocation = await getDidDocumentStorageLocation(address);
-        if (!storageLocation) {
-          throw new Error('DID not found');
-        }
-        if (!isUrlFetchable(storageLocation)) {
-          // workaround to mitigate the absence of the protocol scheme in the storageLocation string of KILT DID objects that were stored on-chain *via the demo-client*
-          storageLocation = `https:${storageLocation}`;
-        }
-        console.info('Fetching DID Document...');
-        fetch(storageLocation)
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error('Got unexpected response from services.');
-            }
-            return response.json();
-          })
-          .then((jsonResponse) => {
-            const didDocumentAsJSON = JSON.stringify(
-              getDidDocumentFromJsonResponse(jsonResponse)
-            );
-            console.info('OK DID Document found');
-            res.send(didDocumentAsJSON);
-          })
-          .catch((err) => {
-            console.error('Error while querying services.', err);
-            res.sendStatus(404);
-          });
-      } catch (err) {
-        console.error('Error while querying DID document.', err);
-        res.sendStatus(404);
+        didResolutionResult = await Did.resolveDoc(did)
+      } catch(error) {
+        console.info("\n⚠️ Could not resolve DID with given error:")
+        console.info(JSON.stringify(error, null, 2))
+        res.sendStatus(400)
+        return
       }
-    } catch (err) {
-      console.error('Could not query DID document.', err);
-      res.sendStatus(404);
+
+      if (!didResolutionResult) {
+        console.trace(`\n🔍 DID ${did} not found (on chain)`)
+        res.sendStatus(404)
+        return
+      }
+
+      console.trace('\n↑↓ Resolved DID details:')
+      console.trace(JSON.stringify(didResolutionResult, null, 2))
+
+      // In case the DID has been deleted, we return the minimum set of information,
+      // which is represented by the sole `id` property.
+      // https://www.w3.org/TR/did-core/#did-document-properties
+      const didDocument = didResolutionResult.details ?
+        Did.exportToDidDocument(didResolutionResult.details, 'application/ld+json') :
+        { id: did, '@context': ['https://www.w3.org/ns/did/v1'] }
+
+      const exportedDidDocument = {
+        didDocument,
+        didDocumentMetadata: didResolutionResult.metadata
+      }
+
+      console.trace('\n← Exported DID document:')
+      console.trace(JSON.stringify(exportedDidDocument, null, 2))
+
+      res.send(exportedDidDocument)
+    } catch (error) {
+      console.error("\n🚨 Could not satisfy request because of the following error:")
+      console.error(JSON.stringify(error, null, 2))
+      res.sendStatus(500)
+    } finally {
+      console.log('--------------------')
     }
-  });
+  })
 
   driver.listen(PORT, () => {
-    console.info(`🚀  KILT Resolver driver active on port ${PORT}...`);
-  });
+    console.info(`🚀 KILT DID resolver driver running on port ${PORT} and connected to ${BLOCKCHAIN_NODE}...`)
+  })
 }
 
-start();
+start()
