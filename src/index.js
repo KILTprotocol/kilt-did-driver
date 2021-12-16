@@ -11,6 +11,7 @@ const { Did, init, connect } = require('@kiltprotocol/sdk-js')
 
 const { PORT, BLOCKCHAIN_NODE } = require('./config')
 const { URI_DID } = require('./consts')
+const { processAcceptHeaders } = require('./utils')
 
 const driver = express()
 
@@ -25,7 +26,10 @@ async function start() {
       console.log('--------------------')
       console.info('\n→ Received headers:')
       console.info(JSON.stringify(req.headers, null, 2))
+      const { exportType, defaultExport, responseContentType } = processAcceptHeaders(req.headers.accept)
       const { did } = req.params
+      // Add queried DID to default export for deleted resolutions
+      defaultExport.id = did
 
       let didResolutionResult
       // Throws if the address is not a valid address
@@ -51,8 +55,8 @@ async function start() {
       // which is represented by the sole `id` property.
       // https://www.w3.org/TR/did-core/#did-document-properties
       const didDocument = didResolutionResult.details ?
-        Did.exportToDidDocument(didResolutionResult.details, 'application/ld+json') :
-        { id: did, '@context': ['https://www.w3.org/ns/did/v1'] }
+        Did.exportToDidDocument(didResolutionResult.details, exportType) :
+        defaultExport
 
       const exportedDidDocument = {
         didDocument,
@@ -62,6 +66,7 @@ async function start() {
       console.trace('\n← Exported DID document:')
       console.trace(JSON.stringify(exportedDidDocument, null, 2))
 
+      res.contentType(responseContentType)
       res.send(exportedDidDocument)
     } catch (error) {
       console.error("\n🚨 Could not satisfy request because of the following error:")
