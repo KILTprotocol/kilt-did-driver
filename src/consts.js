@@ -6,7 +6,7 @@
  */
 
 // did
-const URI_DID = '/1.0/identifiers/:did'
+const URI_DID = '/1.0/identifiers/*'
 
 module.exports = {
   URI_DID

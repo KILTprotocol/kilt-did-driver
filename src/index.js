@@ -27,7 +27,8 @@ async function start() {
       console.info('\n→ Received headers:')
       console.info(JSON.stringify(req.headers, null, 2))
       const { exportType, defaultExport, responseContentType } = processAcceptHeaders(req.headers.accept)
-      const { did } = req.params
+      // We can't use pattern matching as the DID might include '/' characters.
+      const did = req.params['0']
       // Add queried DID to default export for deleted resolutions
       defaultExport.id = did
 
