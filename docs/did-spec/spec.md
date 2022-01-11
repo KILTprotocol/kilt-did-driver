@@ -9,6 +9,7 @@
 
 ### Version History
 
+- **v1.1** - Jan.10 2022
 - **v1.0** - Nov.12 2021
 - **v0.1** - Mar.03 2019
 
@@ -42,10 +43,10 @@ A KILT light DID has the following structure:
 kilt-did            = "did:kilt:light:"<key-encoding><did-identifier>(":"<additional-details>)?
 key-encoding        = [0-9][0-9]
 did-identifier      = <base-58-encoded-kilt-address>
-additional-details  = <base-64-encoded-details>
+additional-details  = <base-58-encoded-details>
 ```
 
-where `<base-58-encoded-kilt-address>` is a KILT address, and `<base-64-encoded-details>` is the Base64-encoded and CBOR-serialised version of the additional light DID details, as explained below.
+where `<base-58-encoded-kilt-address>` is a KILT address, and `<base-58-encoded-details>` is the Base58-encoded and CBOR-serialised version of the additional light DID details, as explained below.
 
 KILT light DIDs are entirely off-chain and support a single authentication key, an optional key agreement key, and unlimited service details.
 
@@ -56,7 +57,7 @@ The types of authentication keys supported by a light DID are `sr25519`, and `ed
 
 The optional *encryption key*, if present, can currently only be of type `x25519`.
 
-Both the encryption key and *services*, if present upon light DID creation, are combined into a JSON-like structure, which is then serialised using [CBOR][cbor] and Base64-encoded.
+Both the encryption key and *services*, if present upon light DID creation, are combined into a JSON-like structure, which is then serialised using [CBOR][cbor], flagged to indicate the serialisation strategy used, and Base58-multiencoded following the [multibase][multibase-repo] specification.
 The resulting string is then appended to the light DID identifier after an additional `:` to separate the main identifier representing the DID public authentication key from the additional details.
 
 Hence, for a light DID with the following details:
@@ -67,7 +68,7 @@ Hence, for a light DID with the following details:
 
 the resulting DID will be
 
-`did:kilt:light:004pqDzaWi3w7TzYzGnQDyrasK6UnyNnW6JQvWRrq6r8HzNNGy:omFlomlwdWJsaWNLZXlYIORt+eYj7CPRtIZvm86eHG+s4ffdNRH+WWcsqDlPCMVeZHR5cGVmeDI1NTE5YXOBo2JpZG1teS1zZXJ2aWNlLWlkZXR5cGVzgW9teS1zZXJ2aWNlLXR5cGVkdXJsc4FubXktc2VydmljZS11cmw=`
+`did:kilt:light:004pqDzaWi3w7TzYzGnQDyrasK6UnyNnW6JQvWRrq6r8HzNNGy:z14mMLbhZGB6YYU7ud2eFvUiHz3Mwo6UdttffCxB5s4hB3pxV2UgTQrgTyV6MZ8FAvqqKZQpxsJTFRYHzYhjzDUbxMtyxQtTrBu4F9YZx99AuEHuNSPCCd8RqpLeczkuDTGMP7eBDmmNbPbiXhKv5hb6ibYPCpZjUtjPBDqUQ1wXmBv3`
 
 This means that the length of a light DID is directly dependent on the number of additional details that are encoded.
 For simpler cases where only an authentication key is needed, the light DID will have a structure like `did:kilt:light:004pqDzaWi3w7TzYzGnQDyrasK6UnyNnW6JQvWRrq6r8HzNNGy`, which is the equivalent of taking the long DID above and removing everything after the last `":"` or, in other terms, generate a KILT account and prepend it with `did:kilt:`.
@@ -341,3 +342,4 @@ The SDK provides a default resolver implementation that follows this specificati
 [blake-2]: https://www.blake2.net/
 [dif-universal-resolver]: https://dev.uniresolver.io/
 [scale-encoding]: https://docs.substrate.io/v3/advanced/scale-codec/
+[multibase-repo]: https://github.com/multiformats/multibase#multibase-table
