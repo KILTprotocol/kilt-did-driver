@@ -9,9 +9,9 @@
 
 ### Version History
 
-- **v1.1** - Jan.10 2022
-- **v1.0** - Nov.12 2021
-- **v0.1** - Mar.03 2019
+- **v1.1 - Jan.10 2022**: Switch light DID details encoding to use base58
+- **v1.0 - Nov.12 2021**: Support new KILT DID specification for light and full DIDs
+- **v0.1 - Mar.03 2019**: Support initial KILT DID design
 
 ---
 
