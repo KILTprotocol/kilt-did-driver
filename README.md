@@ -13,7 +13,7 @@ Nevertheless, it can also be run locally either as an HTTP server or a Docker co
 
 ### Run with Node
 
-Install the dependencies with `yarn`, then start the HTTP server with either `yarn start` to connect the driver to the official [Spiritnet network](https://polkadot.js.org/apps/?rpc=wss://spiritnet.kilt.io) or `yarn start:testnet` to connect it to the [Peregrine testnet](https://polkadot.js.org/apps/?rpc=wss://peregrine.kilt.io).
+Install the dependencies with `yarn`, then start the HTTP server with either `yarn start` to connect the driver to the official [Spiritnet network](https://polkadot.js.org/apps/?rpc=wss://spiritnet.kilt.io) or `yarn start:testnet` to connect it to the [Peregrine testnet](https://polkadot.js.org/apps/?rpc=wss://peregrine.kilt.io/parachain-public-ws ).
 By default, the server will listen on port 8080.
 
 ### Run with Docker
