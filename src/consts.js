@@ -8,6 +8,9 @@
 // did
 const URI_DID = '/1.0/identifiers/:did'
 
+const DID_RESOLUTION_RESPONSE_MIME = 'application/ld+json;profile="https://w3id.org/did-resolution"'
+
 module.exports = {
-  URI_DID
+  URI_DID,
+  DID_RESOLUTION_RESPONSE_MIME
 }

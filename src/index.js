@@ -10,7 +10,7 @@ const express = require('express')
 const { Did, init, connect } = require('@kiltprotocol/sdk-js')
 
 const { PORT, BLOCKCHAIN_NODE } = require('./config')
-const { URI_DID } = require('./consts')
+const { URI_DID, DID_RESOLUTION_RESPONSE_MIME } = require('./consts')
 const { processAcceptHeaders } = require('./utils')
 
 const driver = express()
@@ -27,6 +27,11 @@ async function start() {
       console.info('\n→ Received headers:')
       console.info(JSON.stringify(req.headers, null, 2))
       const { exportType, defaultExport, responseContentType } = processAcceptHeaders(req.headers.accept)
+      if (!(exportType || responseContentType)) {
+        console.error(`Received accept header with unsupported MIME type(s)`)
+        res.sendStatus(406)
+        return
+      }
       const { did } = req.params
       // Add queried DID to default export for deleted resolutions
       defaultExport.id = did
@@ -58,16 +63,23 @@ async function start() {
         Did.exportToDidDocument(didResolutionResult.details, exportType) :
         defaultExport
 
-      const exportedDidDocument = {
-        didDocument,
-        didDocumentMetadata: didResolutionResult.metadata
+      let response;
+
+      if (responseContentType === DID_RESOLUTION_RESPONSE_MIME) {
+        response = {
+          didDocument,
+          didDocumentMetadata: didResolutionResult.metadata,
+          didResolutionMetadata: {}
+        }
+      } else {
+        response = didDocument
       }
 
-      console.trace('\n← Exported DID document:')
-      console.trace(JSON.stringify(exportedDidDocument, null, 2))
+      console.info('\n← Responding with:')
+      console.info(JSON.stringify(response, null, 2))
 
       res.contentType(responseContentType)
-      res.send(exportedDidDocument)
+      res.send(response)
     } catch (error) {
       console.error("\n🚨 Could not satisfy request because of the following error:")
       console.error(JSON.stringify(error, null, 2))
