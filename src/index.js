@@ -40,21 +40,21 @@ async function start() {
       // Throws if the address is not a valid address
       try {
         didResolutionResult = await Did.resolveDoc(did)
-      } catch(error) {
-        console.info("\n⚠️ Could not resolve DID with given error:")
-        console.info(JSON.stringify(error, null, 2))
+      } catch (error) {
+        console.error("\n⚠️ Could not resolve DID with given error:")
+        console.error(JSON.stringify(error, null, 2))
         res.sendStatus(400)
         return
       }
 
       if (!didResolutionResult) {
-        console.trace(`\n🔍 DID ${did} not found (on chain)`)
+        console.info(`\n🔍 DID ${did} not found (on chain)`)
         res.sendStatus(404)
         return
       }
 
-      console.trace('\n↑↓ Resolved DID details:')
-      console.trace(JSON.stringify(didResolutionResult, null, 2))
+      console.info('\n↑↓ Resolved DID details:')
+      console.info(JSON.stringify(didResolutionResult, null, 2))
 
       // In case the DID has been deleted, we return the minimum set of information,
       // which is represented by the sole `id` property.
