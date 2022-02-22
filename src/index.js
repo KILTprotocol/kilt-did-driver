@@ -10,8 +10,12 @@ const express = require('express')
 const { Did, init, connect } = require('@kiltprotocol/sdk-js')
 
 const { PORT, BLOCKCHAIN_NODE } = require('./config')
-const { URI_DID } = require('./consts')
-const { processAcceptHeaders } = require('./utils')
+const {
+  URI_DID,
+  DID_RESOLUTION_RESPONSE_MIME,
+  DID_DOC_CONTEXT,
+  DID_RESOLUTION_RESPONSE_CONTEXT
+} = require('./consts')
 
 const driver = express()
 
@@ -21,64 +25,107 @@ async function start() {
 
   // URI_DID is imposed by the universal-resolver
   driver.get(URI_DID, async (req, res) => {
-    // Catch-all for generic error 500
-    try {
-      console.log('--------------------')
-      console.info('\n→ Received headers:')
-      console.info(JSON.stringify(req.headers, null, 2))
-      const { exportType, defaultExport, responseContentType } = processAcceptHeaders(req.headers.accept)
-      const { did } = req.params
-      // Add queried DID to default export for deleted resolutions
-      defaultExport.id = did
-
-      let didResolutionResult
-      // Throws if the address is not a valid address
+    async function handleRequest(responseContentType) {
+      const isJsonLd = responseContentType.includes('ld+json')
+      // Catch-all for generic error 500
       try {
-        didResolutionResult = await Did.resolveDoc(did)
-      } catch(error) {
-        console.info("\n⚠️ Could not resolve DID with given error:")
-        console.info(JSON.stringify(error, null, 2))
-        res.sendStatus(400)
-        return
+        console.log('--------------------')
+        console.info('\n→ Received headers:')
+        console.info(JSON.stringify(req.headers, null, 2))
+        const { did } = req.params
+
+        const didResolutionResult = {
+          '@context': [DID_RESOLUTION_RESPONSE_CONTEXT],
+          didDocument: null,
+          didDocumentMetadata: {},
+          didResolutionMetadata: {
+            contentType: isJsonLd
+              ? 'application/did+ld+json'
+              : 'application/did+json'
+          }
+        }
+
+        let resolvedDidDetails
+        // Throws if the address is not a valid address
+        try {
+          resolvedDidDetails = await Did.resolveDoc(did)
+          if (!resolvedDidDetails) {
+            console.info(`\n🔍 DID ${did} not found (on chain)`)
+            didResolutionResult.didResolutionMetadata.error = 'notFound'
+            didResolutionResult.didResolutionMetadata.errorMessage = `DID ${did} not found (on chain)`
+            res.status(404)
+          } else {
+            console.info('\n↑↓ Resolved DID details:')
+            console.info(JSON.stringify(resolvedDidDetails, null, 2))
+            didResolutionResult.didDocumentMetadata =
+              resolvedDidDetails.metadata
+          }
+        } catch (error) {
+          console.error('\n⚠️ Could not resolve DID with given error:')
+          console.error(`${error}`)
+          didResolutionResult.didResolutionMetadata.error = 'invalidDidUrl'
+          didResolutionResult.didResolutionMetadata.errorMessage = error.message
+          res.status(400)
+        }
+
+        // In case the DID has been deleted, we return the minimum set of information,
+        // which is represented by the sole `id` property.
+        // https://www.w3.org/TR/did-core/#did-document-properties
+        if (didResolutionResult.didDocumentMetadata.deactivated) {
+          // sending a 410 according to https://w3c-ccg.github.io/did-resolution/#bindings-https
+          res.status(410)
+          didResolutionResult.didDocument = {
+            id: did
+          }
+          if (isJsonLd) {
+            didResolutionResult.didDocument['@context'] = [DID_DOC_CONTEXT]
+          }
+        } else if (resolvedDidDetails && resolvedDidDetails.details) {
+          didResolutionResult.didDocument = Did.exportToDidDocument(
+            resolvedDidDetails.details,
+            isJsonLd ? 'application/ld+json' : 'application/json'
+          )
+        }
+
+        const response =
+          responseContentType === DID_RESOLUTION_RESPONSE_MIME
+            ? didResolutionResult
+            : didResolutionResult.didDocument
+
+        console.info('\n← Responding with:')
+        console.info(JSON.stringify(response, null, 2))
+
+        res.contentType(responseContentType).send(response)
+      } catch (error) {
+        console.error(
+          '\n🚨 Could not satisfy request because of the following error:'
+        )
+        console.error(`${error}`)
+        res.sendStatus(500)
+      } finally {
+        console.log('--------------------')
       }
-
-      if (!didResolutionResult) {
-        console.trace(`\n🔍 DID ${did} not found (on chain)`)
-        res.sendStatus(404)
-        return
-      }
-
-      console.trace('\n↑↓ Resolved DID details:')
-      console.trace(JSON.stringify(didResolutionResult, null, 2))
-
-      // In case the DID has been deleted, we return the minimum set of information,
-      // which is represented by the sole `id` property.
-      // https://www.w3.org/TR/did-core/#did-document-properties
-      const didDocument = didResolutionResult.details ?
-        Did.exportToDidDocument(didResolutionResult.details, exportType) :
-        defaultExport
-
-      const exportedDidDocument = {
-        didDocument,
-        didDocumentMetadata: didResolutionResult.metadata
-      }
-
-      console.trace('\n← Exported DID document:')
-      console.trace(JSON.stringify(exportedDidDocument, null, 2))
-
-      res.contentType(responseContentType)
-      res.send(exportedDidDocument)
-    } catch (error) {
-      console.error("\n🚨 Could not satisfy request because of the following error:")
-      console.error(JSON.stringify(error, null, 2))
-      res.sendStatus(500)
-    } finally {
-      console.log('--------------------')
     }
+    // content negotiation; what do we return?
+    res.format({
+      [DID_RESOLUTION_RESPONSE_MIME]: () =>
+        handleRequest(DID_RESOLUTION_RESPONSE_MIME),
+      'application/ld+json': () => handleRequest('application/did+ld+json'),
+      'application/did+ld+json': () => handleRequest('application/did+ld+json'),
+      'application/json': () => handleRequest('application/did+json'),
+      'application/did+json': () => handleRequest('application/did+json'),
+      default: () => {
+        const message = `Not acceptable media type(s) ${req.headers.accept}`
+        console.error(`Error: ${message}`)
+        res.status(406).send(message)
+      }
+    })
   })
 
   driver.listen(PORT, () => {
-    console.info(`🚀 KILT DID resolver driver running on port ${PORT} and connected to ${BLOCKCHAIN_NODE}...`)
+    console.info(
+      `🚀 KILT DID resolver driver running on port ${PORT} and connected to ${BLOCKCHAIN_NODE}...`
+    )
   })
 }
 
