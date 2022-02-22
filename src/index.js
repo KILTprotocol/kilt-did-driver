@@ -35,7 +35,7 @@ async function start() {
         const { did } = req.params
 
         const didResolutionResult = {
-          '@context': DID_RESOLUTION_RESPONSE_CONTEXT,
+          '@context': [DID_RESOLUTION_RESPONSE_CONTEXT],
           didDocument: null,
           didDocumentMetadata: {},
           didResolutionMetadata: {
@@ -78,7 +78,7 @@ async function start() {
             id: did
           }
           if (isJsonLd) {
-            didResolutionResult.didDocument['@context'] = DID_DOC_CONTEXT
+            didResolutionResult.didDocument['@context'] = [DID_DOC_CONTEXT]
           }
         } else if (resolvedDidDetails && resolvedDidDetails.details) {
           didResolutionResult.didDocument = Did.exportToDidDocument(
