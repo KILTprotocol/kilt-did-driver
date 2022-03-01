@@ -8,7 +8,7 @@ WORKDIR /app
 
 COPY package.json yarn.lock ./
 
-RUN yarn install
+RUN yarn install --production
 
 # From https://github.com/nodejs/docker-node/issues/282#issue-193774074 (same as above)
 RUN apk del .gyp
