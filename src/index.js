@@ -68,7 +68,7 @@ async function start() {
           res.status(400)
         }
 
-        // In case the DID has been deleted, we return the minimum set of information,
+        // In case the DID has been deactivated, we return the minimum set of information,
         // which is represented by the sole `id` property.
         // https://www.w3.org/TR/did-core/#did-document-properties
         if (didResolutionResult.didDocumentMetadata.deactivated) {
@@ -85,6 +85,14 @@ async function start() {
             resolvedDidDetails.details,
             isJsonLd ? 'application/ld+json' : 'application/json'
           )
+
+          if (resolvedDidDetails.details instanceof Did.FullDidDetails) {
+            // check for web3name
+            const w3n = await Did.Web3Names.queryWeb3NameForDid(did)
+            if (w3n) {
+              didResolutionResult.didDocument.alsoKnownAs = [`w3n:${w3n}`]
+            }
+          }
         }
 
         const response =
