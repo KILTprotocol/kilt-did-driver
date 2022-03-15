@@ -21,7 +21,9 @@ const driver = express()
 
 async function start() {
   await init({ address: BLOCKCHAIN_NODE })
-  await connect()
+  const { api } = await connect()
+
+  const hasWeb3Names = !!api.consts.web3Names
 
   // URI_DID is imposed by the universal-resolver
   driver.get(URI_DID, async (req, res) => {
@@ -86,10 +88,15 @@ async function start() {
             isJsonLd ? 'application/ld+json' : 'application/json'
           )
 
-          if (resolvedDidDetails.details instanceof Did.FullDidDetails) {
+          if (
+            hasWeb3Names &&
+            resolvedDidDetails.details instanceof Did.FullDidDetails
+          ) {
             // check for web3name
+            console.info(`\n🔍 Performing Web3Name lookup for ${did}`)
             const w3n = await Did.Web3Names.queryWeb3NameForDid(did)
             if (w3n) {
+              console.info(`   🦸 DID is associated with Web3Name "${w3n}"`)
               didResolutionResult.didDocument.alsoKnownAs = [`w3n:${w3n}`]
             }
           }
@@ -133,6 +140,11 @@ async function start() {
   driver.listen(PORT, () => {
     console.info(
       `🚀 KILT DID resolver driver running on port ${PORT} and connected to ${BLOCKCHAIN_NODE}...`
+    )
+    console.info(
+      hasWeb3Names
+        ? '\n🥳 Web3Names are available on this chain!'
+        : '\n🐸 Web3Names are not available on this chain'
     )
   })
 }
