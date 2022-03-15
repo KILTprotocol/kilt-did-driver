@@ -98,6 +98,10 @@ async function start() {
             if (w3n) {
               console.info(`   🦸 DID is associated with Web3Name "${w3n}"`)
               didResolutionResult.didDocument.alsoKnownAs = [`w3n:${w3n}`]
+            } else {
+              console.info(
+                `   ❌ DID is not currently associated with a Web3Name`
+              )
             }
           }
         }
