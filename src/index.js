@@ -148,7 +148,7 @@ async function start() {
     console.info(
       hasWeb3Names
         ? '\n🥳 Web3Names are available on this chain!'
-        : '\n👵🏻 Web3Names are not available on this chain'
+        : '\n👵 Web3Names are not available on this chain'
     )
   })
 }
