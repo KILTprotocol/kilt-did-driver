@@ -7,7 +7,8 @@
 
 const express = require('express')
 
-const { Did, init, connect } = require('@kiltprotocol/sdk-js')
+const { init, connect } = require('@kiltprotocol/core')
+const Did = require('@kiltprotocol/did')
 
 const { PORT, BLOCKCHAIN_NODE } = require('./config')
 const {

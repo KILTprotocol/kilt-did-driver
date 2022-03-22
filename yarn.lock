@@ -270,31 +270,6 @@
     "@polkadot/util-crypto" "^8.4.1"
     cbor "^8.0.2"
 
-"@kiltprotocol/messaging@0.26.0":
-  version "0.26.0"
-  resolved "https://registry.yarnpkg.com/@kiltprotocol/messaging/-/messaging-0.26.0.tgz#7736551298bb7aabe88c75f5c7498f0565713dd4"
-  integrity sha512-ovrbb17T296tOvjaJsqUR/Qm9vF2JemHrBWBkSwYYpl+RCgTwYecE//Q1eSKh3JvwE5tDK5/jugwd2dep0mUOA==
-  dependencies:
-    "@kiltprotocol/core" "0.26.0"
-    "@kiltprotocol/did" "0.26.0"
-    "@kiltprotocol/types" "0.26.0"
-    "@kiltprotocol/utils" "0.26.0"
-    "@polkadot/api-augment" "^7.10.1"
-    "@polkadot/util" "^8.4.1"
-
-"@kiltprotocol/sdk-js@^0.26.0":
-  version "0.26.0"
-  resolved "https://registry.yarnpkg.com/@kiltprotocol/sdk-js/-/sdk-js-0.26.0.tgz#55e9bba5e08f04485ff9229be30eba9c1da44d23"
-  integrity sha512-jOkemy75HMf/ysjWe2qmYSU/QzClqlSFoa75ShcnJvp3NLX/Pk52DI/wjxTZLrFcE8j72svF+5mRJ3haP2YTwA==
-  dependencies:
-    "@kiltprotocol/chain-helpers" "0.26.0"
-    "@kiltprotocol/core" "0.26.0"
-    "@kiltprotocol/did" "0.26.0"
-    "@kiltprotocol/messaging" "0.26.0"
-    "@kiltprotocol/types" "0.26.0"
-    "@kiltprotocol/utils" "0.26.0"
-    "@polkadot/api-augment" "^7.10.1"
-
 "@kiltprotocol/types@0.26.0":
   version "0.26.0"
   resolved "https://registry.yarnpkg.com/@kiltprotocol/types/-/types-0.26.0.tgz#99aeeefb4192c16b737fe9107ab8f7d30206111b"
