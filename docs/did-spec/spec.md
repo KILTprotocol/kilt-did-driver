@@ -9,6 +9,7 @@
 
 ### Version History
 
+- **v1.2 - Mar.22 2022**: Add recently added support for web3 names
 - **v1.1 - Jan.10 2022**: Switch light DID details encoding to use base58
 - **v1.0 - Nov.12 2021**: Support new KILT DID specification for light and full DIDs
 - **v0.1 - Mar.03 2019**: Support initial KILT DID design
@@ -148,6 +149,19 @@ This is possible because a light DID's main identifier is the encoding of a KILT
 Hence, a light DID can be migrated to a full DID and the KILT blockchain ensures that both identities belong to the same subject, who was able to provide a valid signature to anchor the light DID on chain, upgrading it to a full one.
 
 Once upgraded, a light DID becomes unusable, meaning that all the operations involving authentication of the DID subject must be performed using the currently active authentication key of the full DID.
+
+### Add a web3 name to a full DID
+
+Full DIDs can optionally claim a unique user-friendly alias called **Web3 name**, similar to what domain names are for IP addresses.
+Each DID can only claim at most one web3 name, and each web3 name can be only claimed by one DID, with the KILT blockchain ensuring the unicity property.
+
+A Web3 name can only contain lowercase ASCII characters, digits, and the symbols `-` and `_`.
+The choice of restricting the set of characters to a subset of the ASCII charset with the addition of digits and some symbols ensures that no two Web3 name can look alike, as it would be the case of uppercase `O` and the digit `0`.
+Web3 names can have a length included in the inclusive range [3, 32], with the following regex capturing all and only valid Web3 names: `^[a-z0-9\-\_]{3,32}$`.
+
+The Web3 names live under the `web3_names` pallet, which expose both extrinsics to claim/release Web3 names, and storage to retrieve the owner of a given Web3 name and viceversa.
+
+In a DID Document, if a DID has an associated Web3 name, this will appear under the `alsoKnownAs` field, which otherwise would be omitted.
 
 ### Resolve a DID
 
