@@ -156,7 +156,7 @@ Full DIDs can optionally claim a unique user-friendly alias called **Web3 name**
 Each DID can only claim at most one web3 name, and each web3 name can be only claimed by one DID, with the KILT blockchain ensuring the unicity property.
 
 A Web3 name can only contain lowercase ASCII characters, digits, and the symbols `-` and `_`.
-The choice of restricting the set of characters to a subste of the ASCII charset with the addition of digits and some symbols ensures that no two Web3 name can look alike, as it would be the case of uppercase `O` and the digit `0`.
+The choice of restricting the set of characters to a subset of the ASCII charset with the addition of digits and some symbols ensures that no two Web3 name can look alike, as it would be the case of uppercase `O` and the digit `0`.
 Web3 names can have a length included in the inclusive range [3, 32], with the following regex capturing all and only valid Web3 names: `^[a-z0-9\-\_]{3,32}$`.
 
 The Web3 names live under the `web3_names` pallet, which expose both extrinsics to claim/release Web3 names, and storage to retrieve the owner of a given Web3 name and viceversa.
