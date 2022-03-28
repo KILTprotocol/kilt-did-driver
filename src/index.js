@@ -7,7 +7,7 @@
 
 const express = require('express')
 
-const { init, connect } = require('@kiltprotocol/core')
+const { BlockchainApiConnection } = require('@kiltprotocol/chain-helpers')
 const Did = require('@kiltprotocol/did')
 
 const { PORT, BLOCKCHAIN_NODE } = require('./config')
@@ -19,12 +19,56 @@ const {
 } = require('./consts')
 
 const driver = express()
+let hasWeb3Names = false
+
+async function connect() {
+  console.info(`🔌 (re)intializing connection to ${BLOCKCHAIN_NODE}`)
+  // keep reference to old connection for proper disconnection
+  const oldConnection = BlockchainApiConnection.getConnection()
+  // overwrite background blockchain connection with new instance
+  BlockchainApiConnection.setConnection(
+    BlockchainApiConnection.buildConnection(BLOCKCHAIN_NODE)
+  )
+  // shutdown the old one
+  if (oldConnection) {
+    oldConnection.then(({ api }) => api.disconnect())
+  }
+
+  // (re)check if we have Web3Names
+  const { api } = await BlockchainApiConnection.getConnection()
+  hasWeb3Names = !!api.consts.web3Names
+  console.info(
+    hasWeb3Names
+      ? '🥳 Web3Names are available on this chain!'
+      : '👵 Web3Names are not available on this chain'
+  )
+  // eslint-disable-next-line no-use-before-define
+  watchRuntimeUpgrade()
+}
+
+async function watchRuntimeUpgrade() {
+  let currentSpecVersion
+  const { api } = await BlockchainApiConnection.getConnection()
+  api.query.system.lastRuntimeUpgrade((specInfo) => {
+    const newSpecVersion = specInfo
+      .unwrapOrDefault()
+      .get('specVersion')
+      .toString()
+    if (!currentSpecVersion) {
+      currentSpecVersion = newSpecVersion
+      console.info(`#️⃣  chain running spec version ${newSpecVersion}`)
+      return
+    }
+    if (currentSpecVersion !== newSpecVersion) {
+      console.info(`🆙  chain upgraded to spec version ${newSpecVersion}`)
+      connect()
+    }
+  })
+}
 
 async function start() {
-  await init({ address: BLOCKCHAIN_NODE })
-  const { api } = await connect()
-
-  const hasWeb3Names = !!api.consts.web3Names
+  // initialize connection
+  await connect()
 
   // URI_DID is imposed by the universal-resolver
   driver.get(URI_DID, async (req, res) => {
@@ -145,11 +189,6 @@ async function start() {
   driver.listen(PORT, () => {
     console.info(
       `🚀 KILT DID resolver driver running on port ${PORT} and connected to ${BLOCKCHAIN_NODE}...`
-    )
-    console.info(
-      hasWeb3Names
-        ? '\n🥳 Web3Names are available on this chain!'
-        : '\n👵 Web3Names are not available on this chain'
     )
   })
 }

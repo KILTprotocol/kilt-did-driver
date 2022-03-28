@@ -30,17 +30,10 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@babel/runtime@^7.17.2":
+"@babel/runtime@^7.17.2", "@babel/runtime@^7.9.6":
   version "7.17.7"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.17.7.tgz#a5f3328dc41ff39d803f311cfe17703418cf9825"
   integrity sha512-L6rvG9GDxaLgFjg41K+5Yv9OMrU98sWe+Ykmc6FDJW/+vYZMhdOMKkISgzptMaERHvS2Y2lw9MDRm2gHhlQQoA==
-  dependencies:
-    regenerator-runtime "^0.13.4"
-
-"@babel/runtime@^7.9.6":
-  version "7.16.3"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.16.3.tgz#b86f0db02a04187a3c17caa77de69840165d42d5"
-  integrity sha512-WBwekcqacdY2e9AF/Q7WLFUWmdJGJTkbjqTjoMDgXkVZ3ZRUvOPsLb5KdwISoQVsbP+DQzVZW4Zhci0DvpbNTQ==
   dependencies:
     regenerator-runtime "^0.13.4"
 
@@ -231,26 +224,6 @@
   dependencies:
     "@kiltprotocol/utils" "0.26.0"
     "@polkadot/api-augment" "^7.10.1"
-    typescript-logging "^0.6.4"
-
-"@kiltprotocol/core@0.26.0":
-  version "0.26.0"
-  resolved "https://registry.yarnpkg.com/@kiltprotocol/core/-/core-0.26.0.tgz#d93963fdd365909306169acccd6dc7155bf8edf2"
-  integrity sha512-Ks6hTEP+ifEWdOrVbhzayJv1r2YzITcnklXpeHZSequgXlUlUoH+qRAgPn1ROGPg8+0GUz8YMHCdWe74VQFHgw==
-  dependencies:
-    "@kiltprotocol/chain-helpers" "0.26.0"
-    "@kiltprotocol/config" "0.26.0"
-    "@kiltprotocol/did" "0.26.0"
-    "@kiltprotocol/types" "0.26.0"
-    "@kiltprotocol/utils" "0.26.0"
-    "@polkadot/api" "^7.10.1"
-    "@polkadot/api-augment" "^7.10.1"
-    "@polkadot/keyring" "^8.4.1"
-    "@polkadot/types" "^7.10.1"
-    "@polkadot/types-known" "^7.10.1"
-    "@polkadot/util" "^8.4.1"
-    "@polkadot/util-crypto" "^8.4.1"
-    tweetnacl "^1.0.3"
     typescript-logging "^0.6.4"
 
 "@kiltprotocol/did@0.26.0":
@@ -454,7 +427,7 @@
     "@polkadot/types-codec" "7.12.1"
     "@polkadot/util" "^8.5.1"
 
-"@polkadot/types-known@7.12.1", "@polkadot/types-known@^7.10.1":
+"@polkadot/types-known@7.12.1":
   version "7.12.1"
   resolved "https://registry.yarnpkg.com/@polkadot/types-known/-/types-known-7.12.1.tgz#63caaf9f143a563af8b58131f5e13276850f5987"
   integrity sha512-y+hu/qrE874WI0tNXIge7SX6kIC2sfhGWSWU0uyrA8khc7ByR9ENwAzxkJD3zht2taZZCM+ucVVH9ogpJZKCTg==
