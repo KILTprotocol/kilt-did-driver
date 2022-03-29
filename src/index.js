@@ -24,7 +24,15 @@ async function start() {
   await init({ address: BLOCKCHAIN_NODE })
   const { api } = await connect()
 
-  const hasWeb3Names = !!api.consts.web3Names
+  const hasWeb3Names = () => !!api.consts.web3Names
+  const logWeb3NameSupport = () => {
+    console.info(
+      hasWeb3Names()
+        ? '🥳 Web3Names are available on this chain!'
+        : '👵 Web3Names are currently not available on this chain'
+    )
+  }
+  api.on('decorated', logWeb3NameSupport)
 
   // URI_DID is imposed by the universal-resolver
   driver.get(URI_DID, async (req, res) => {
@@ -90,7 +98,7 @@ async function start() {
           )
 
           if (
-            hasWeb3Names &&
+            hasWeb3Names() &&
             resolvedDidDetails.details instanceof Did.FullDidDetails
           ) {
             // check for web3name
@@ -146,11 +154,7 @@ async function start() {
     console.info(
       `🚀 KILT DID resolver driver running on port ${PORT} and connected to ${BLOCKCHAIN_NODE}...`
     )
-    console.info(
-      hasWeb3Names
-        ? '\n🥳 Web3Names are available on this chain!'
-        : '\n👵 Web3Names are not available on this chain'
-    )
+    logWeb3NameSupport()
   })
 }
 
