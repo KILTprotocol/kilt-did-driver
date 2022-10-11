@@ -352,7 +352,7 @@ The SDK provides a default resolver implementation that follows this specificati
 [kilt-sdk]: https://github.com/KILTprotocol/sdk-js
 [cbor]: https://cbor.io/
 [spiritnet-polkadot]: https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fspiritnet.kilt.io%2F#/explorer
-[kilt-did-docs]: https://dev.kilt.io/docs/sdk/core-feature/did
+[kilt-did-docs]: https://docs.kilt.io/docs/concepts/did
 [blake-2]: https://www.blake2.net/
 [dif-universal-resolver]: https://dev.uniresolver.io/
 [scale-encoding]: https://docs.substrate.io/v3/advanced/scale-codec/
