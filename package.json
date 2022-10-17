@@ -22,7 +22,7 @@
     "@kiltprotocol/did": "0.26.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "node-fetch": "^3.1.1"
+    "node-fetch": "^3.2.10"
   },
   "devDependencies": {
     "@commitlint/cli": "^9.1.1",
