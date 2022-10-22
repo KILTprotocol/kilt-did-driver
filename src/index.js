@@ -7,7 +7,7 @@
 
 const express = require('express')
 
-const { init, connect } = require('@kiltprotocol/core')
+const { connect } = require('@kiltprotocol/core')
 const Did = require('@kiltprotocol/did')
 
 const { PORT, BLOCKCHAIN_NODE } = require('./config')
@@ -21,8 +21,7 @@ const {
 const driver = express()
 
 async function start() {
-  await init({ address: BLOCKCHAIN_NODE })
-  const { api } = await connect()
+  const api = await connect(BLOCKCHAIN_NODE)
 
   const hasWeb3Names = () => !!api.consts.web3Names
   const logWeb3NameSupport = () => {
@@ -56,10 +55,10 @@ async function start() {
           }
         }
 
-        let resolvedDidDetails
+        let resolvedDidDetails = null
         // Throws if the address is not a valid address
         try {
-          resolvedDidDetails = await Did.resolveDoc(did)
+          resolvedDidDetails = await Did.resolve(did)
           if (!resolvedDidDetails) {
             console.info(`\n🔍 DID ${did} not found (on chain)`)
             didResolutionResult.didResolutionMetadata.error = 'notFound'
@@ -79,34 +78,34 @@ async function start() {
           res.status(400)
         }
 
-        // In case the DID has been deactivated, we return the minimum set of information,
+        // In case the DID has been deactivated or upgraded, we return the minimum set of information,
         // which is represented by the sole `id` property.
         // https://www.w3.org/TR/did-core/#did-document-properties
-        if (didResolutionResult.didDocumentMetadata.deactivated) {
-          // sending a 410 according to https://w3c-ccg.github.io/did-resolution/#bindings-https
-          res.status(410)
+        if (!resolvedDidDetails?.document) {
+          if (didResolutionResult.didDocumentMetadata.deactivated) {
+            // sending a 410 according to https://w3c-ccg.github.io/did-resolution/#bindings-https
+            res.status(410)
+          }
           didResolutionResult.didDocument = {
             id: did
           }
           if (isJsonLd) {
             didResolutionResult.didDocument['@context'] = [DID_DOC_CONTEXT]
           }
-        } else if (resolvedDidDetails && resolvedDidDetails.details) {
+        } else {
           didResolutionResult.didDocument = Did.exportToDidDocument(
-            resolvedDidDetails.details,
+            resolvedDidDetails.document,
             isJsonLd ? 'application/ld+json' : 'application/json'
           )
 
-          if (
-            hasWeb3Names() &&
-            resolvedDidDetails.details instanceof Did.FullDidDetails
-          ) {
+          if (hasWeb3Names() && Did.parse(did).type === 'full') {
             // check for web3name
             console.info(`\n🔍 Performing Web3Name lookup for ${did}`)
-            const w3n = await Did.Web3Names.queryWeb3NameForDid(did)
-            if (w3n) {
-              console.info(`   🦸 DID is associated with Web3Name "${w3n}"`)
-              didResolutionResult.didDocument.alsoKnownAs = [`w3n:${w3n}`]
+            const w3n = await api.query.web3Names.names(Did.toChain(did))
+            if (w3n.isSome) {
+              const name = Did.web3NameFromChain(w3n)
+              console.info(`   🦸 DID is associated with Web3Name "${name}"`)
+              didResolutionResult.didDocument.alsoKnownAs = [`w3n:${name}`]
             } else {
               console.info(
                 `   ❌ DID is not currently associated with a Web3Name`
