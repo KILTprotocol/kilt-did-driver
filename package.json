@@ -18,8 +18,8 @@
     }
   },
   "dependencies": {
-    "@kiltprotocol/core": "0.29.0-rc.3",
-    "@kiltprotocol/did": "0.29.0-rc.3",
+    "@kiltprotocol/core": "^0.29.0",
+    "@kiltprotocol/did": "^0.29.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "node-fetch": "^3.1.1"

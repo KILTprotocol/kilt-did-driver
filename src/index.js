@@ -103,7 +103,7 @@ async function start() {
             console.info(`\n🔍 Performing Web3Name lookup for ${did}`)
             const w3n = await api.query.web3Names.names(Did.toChain(did))
             if (w3n.isSome) {
-              const name = Did.web3NameFromChain(w3n)
+              const name = w3n.unwrap().toUtf8()
               console.info(`   🦸 DID is associated with Web3Name "${name}"`)
               didResolutionResult.didDocument.alsoKnownAs = [`w3n:${name}`]
             } else {
