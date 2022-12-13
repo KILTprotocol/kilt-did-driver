@@ -13,10 +13,13 @@ const DID_RESOLUTION_RESPONSE_MIME =
 
 const DID_DOC_CONTEXT = 'https://www.w3.org/ns/did/v1'
 const DID_RESOLUTION_RESPONSE_CONTEXT = 'https://w3id.org/did-resolution/v1'
+const KILT_DID_CONTEXT =
+  'https://gw.crustapps.net/ipfs/QmU7QkuTCPz7NmD5bD7Z7mQVz2UsSPaEK58B5sYnjnPRNW'
 
 module.exports = {
   URI_DID,
   DID_RESOLUTION_RESPONSE_MIME,
   DID_RESOLUTION_RESPONSE_CONTEXT,
-  DID_DOC_CONTEXT
+  DID_DOC_CONTEXT,
+  KILT_DID_CONTEXT
 }

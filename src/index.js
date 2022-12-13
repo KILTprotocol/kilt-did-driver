@@ -15,7 +15,8 @@ const {
   URI_DID,
   DID_RESOLUTION_RESPONSE_MIME,
   DID_DOC_CONTEXT,
-  DID_RESOLUTION_RESPONSE_CONTEXT
+  DID_RESOLUTION_RESPONSE_CONTEXT,
+  KILT_DID_CONTEXT
 } = require('./consts')
 
 const driver = express()
@@ -89,7 +90,10 @@ async function start() {
             id: did
           }
           if (isJsonLd) {
-            didResolutionResult.didDocument['@context'] = [DID_DOC_CONTEXT]
+            didResolutionResult.didDocument['@context'] = [
+              DID_DOC_CONTEXT,
+              KILT_DID_CONTEXT
+            ]
           }
         } else if (resolvedDidDetails && resolvedDidDetails.details) {
           didResolutionResult.didDocument = Did.exportToDidDocument(
