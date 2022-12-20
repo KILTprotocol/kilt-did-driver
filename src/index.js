@@ -15,6 +15,7 @@ const {
   URI_DID,
   DID_RESOLUTION_RESPONSE_MIME,
   DID_DOC_CONTEXT,
+  KILT_DID_CONTEXT,
   DID_RESOLUTION_RESPONSE_CONTEXT
 } = require('./consts')
 
@@ -96,6 +97,8 @@ async function start() {
             resolvedDidDetails.details,
             isJsonLd ? 'application/ld+json' : 'application/json'
           )
+          // TODO: This will be added by the SDK automatically once support for the new context is added (most likely 0.30.x).
+          didResolutionResult.didDocument['@context'].push(KILT_DID_CONTEXT)
 
           if (
             hasWeb3Names() &&
