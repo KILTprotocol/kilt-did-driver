@@ -7,7 +7,7 @@
 
 const express = require('express')
 
-const { init, connect } = require('@kiltprotocol/core')
+const { connect } = require('@kiltprotocol/core')
 const Did = require('@kiltprotocol/did')
 
 const { PORT, BLOCKCHAIN_NODE } = require('./config')
@@ -22,18 +22,7 @@ const {
 const driver = express()
 
 async function start() {
-  await init({ address: BLOCKCHAIN_NODE })
-  const { api } = await connect()
-
-  const hasWeb3Names = () => !!api.consts.web3Names
-  const logWeb3NameSupport = () => {
-    console.info(
-      hasWeb3Names()
-        ? '🥳 Web3Names are available on this chain!'
-        : '👵 Web3Names are currently not available on this chain'
-    )
-  }
-  api.on('decorated', logWeb3NameSupport)
+  await connect(BLOCKCHAIN_NODE)
 
   // URI_DID is imposed by the universal-resolver
   driver.get(URI_DID, async (req, res) => {
@@ -46,82 +35,53 @@ async function start() {
         console.info(JSON.stringify(req.headers, null, 2))
         const { did } = req.params
 
-        const didResolutionResult = {
-          '@context': [DID_RESOLUTION_RESPONSE_CONTEXT],
-          didDocument: null,
-          didDocumentMetadata: {},
-          didResolutionMetadata: {
-            contentType: isJsonLd
-              ? 'application/did+ld+json'
-              : 'application/did+json'
-          }
-        }
+        // 1. resolve DID
+        const { didDocument, didDocumentMetadata, didResolutionMetadata } =
+          await Did.resolveCompliant(did)
 
-        let resolvedDidDetails
-        // Throws if the address is not a valid address
-        try {
-          resolvedDidDetails = await Did.resolveDoc(did)
-          if (!resolvedDidDetails) {
-            console.info(`\n🔍 DID ${did} not found (on chain)`)
-            didResolutionResult.didResolutionMetadata.error = 'notFound'
-            didResolutionResult.didResolutionMetadata.errorMessage = `DID ${did} not found (on chain)`
-            res.status(404)
-          } else {
-            console.info('\n↑↓ Resolved DID details:')
-            console.info(JSON.stringify(resolvedDidDetails, null, 2))
-            didResolutionResult.didDocumentMetadata =
-              resolvedDidDetails.metadata
-          }
-        } catch (error) {
+        // 2. set HTTP response code
+        if (didResolutionMetadata.error === 'notFound') {
+          console.info(`\n🔍 DID ${did} not found (on chain)`)
+          res.status(404)
+        } else if (didResolutionMetadata.error) {
           console.error('\n⚠️ Could not resolve DID with given error:')
-          console.error(`${error}`)
-          didResolutionResult.didResolutionMetadata.error = 'invalidDidUrl'
-          didResolutionResult.didResolutionMetadata.errorMessage = error.message
+          console.error(
+            `${didResolutionMetadata.error}: ${didResolutionMetadata.errorMessage}`
+          )
           res.status(400)
+        } else if (didDocument) {
+          console.info('\n↑↓ Resolved DID details:')
+          console.info(JSON.stringify(didDocument, null, 2))
         }
 
-        // In case the DID has been deactivated, we return the minimum set of information,
-        // which is represented by the sole `id` property.
-        // https://www.w3.org/TR/did-core/#did-document-properties
-        if (didResolutionResult.didDocumentMetadata.deactivated) {
+        if (didDocumentMetadata.deactivated) {
           // sending a 410 according to https://w3c-ccg.github.io/did-resolution/#bindings-https
           res.status(410)
-          didResolutionResult.didDocument = {
-            id: did
-          }
-          if (isJsonLd) {
-            didResolutionResult.didDocument['@context'] = [DID_DOC_CONTEXT]
-          }
-        } else if (resolvedDidDetails && resolvedDidDetails.details) {
-          didResolutionResult.didDocument = Did.exportToDidDocument(
-            resolvedDidDetails.details,
-            isJsonLd ? 'application/ld+json' : 'application/json'
-          )
-          // TODO: This will be added by the SDK automatically once support for the new context is added (most likely 0.30.x).
-          didResolutionResult.didDocument['@context'].push(KILT_DID_CONTEXT)
-
-          if (
-            hasWeb3Names() &&
-            resolvedDidDetails.details instanceof Did.FullDidDetails
-          ) {
-            // check for web3name
-            console.info(`\n🔍 Performing Web3Name lookup for ${did}`)
-            const w3n = await Did.Web3Names.queryWeb3NameForDid(did)
-            if (w3n) {
-              console.info(`   🦸 DID is associated with Web3Name "${w3n}"`)
-              didResolutionResult.didDocument.alsoKnownAs = [`w3n:${w3n}`]
-            } else {
-              console.info(
-                `   ❌ DID is not currently associated with a Web3Name`
-              )
-            }
-          }
         }
 
-        const response =
-          responseContentType === DID_RESOLUTION_RESPONSE_MIME
-            ? didResolutionResult
-            : didResolutionResult.didDocument
+        // 3. build response according to requested MIME
+
+        // add json-ld contexts if json-ld is requested
+        if (didDocument && isJsonLd) {
+          didDocument['@context'] = [DID_DOC_CONTEXT, KILT_DID_CONTEXT]
+        }
+
+        let response
+        if (responseContentType === DID_RESOLUTION_RESPONSE_MIME) {
+          response = {
+            '@context': [DID_RESOLUTION_RESPONSE_CONTEXT],
+            didDocument,
+            didDocumentMetadata,
+            didResolutionMetadata: {
+              ...didResolutionMetadata,
+              contentType: isJsonLd
+                ? 'application/did+ld+json'
+                : 'application/did+json'
+            }
+          }
+        } else {
+          response = didDocument
+        }
 
         console.info('\n← Responding with:')
         console.info(JSON.stringify(response, null, 2))
@@ -157,7 +117,6 @@ async function start() {
     console.info(
       `🚀 KILT DID resolver driver running on port ${PORT} and connected to ${BLOCKCHAIN_NODE}...`
     )
-    logWeb3NameSupport()
   })
 }
 
