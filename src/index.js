@@ -10,12 +10,14 @@ const express = require('express')
 const { connect } = require('@kiltprotocol/core')
 const Did = require('@kiltprotocol/did')
 
+const {
+  W3C_DID_CONTEXT_URL,
+  KILT_DID_CONTEXT_URL
+} = require('@kiltprotocol/did')
 const { PORT, BLOCKCHAIN_NODE } = require('./config')
 const {
   URI_DID,
   DID_RESOLUTION_RESPONSE_MIME,
-  DID_DOC_CONTEXT,
-  KILT_DID_CONTEXT,
   DID_RESOLUTION_RESPONSE_CONTEXT
 } = require('./consts')
 
@@ -63,7 +65,7 @@ async function start() {
 
         // add json-ld contexts if json-ld is requested
         if (didDocument && isJsonLd) {
-          didDocument['@context'] = [DID_DOC_CONTEXT, KILT_DID_CONTEXT]
+          didDocument['@context'] = [W3C_DID_CONTEXT_URL, KILT_DID_CONTEXT_URL]
         }
 
         let response
