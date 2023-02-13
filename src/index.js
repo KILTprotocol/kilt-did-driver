@@ -55,7 +55,7 @@ async function start() {
           )
           res.status(400)
         } else if (didDocumentMetadata.deactivated) {
-          console.info(`\n🔍 DID ${did} has been disabled`)
+          console.info(`\n❌ DID ${did} has been disabled`)
           // sending a 410 according to https://w3c-ccg.github.io/did-resolution/#bindings-https
           res.status(410)
         }
