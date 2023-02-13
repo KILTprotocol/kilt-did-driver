@@ -40,7 +40,10 @@ async function start() {
         // 1. resolve DID
         const { didDocument, didDocumentMetadata, didResolutionMetadata } =
           await Did.resolveCompliant(did)
-
+        if (didDocument) {
+          console.info('\n↑↓ Resolved DID details:')
+          console.info(JSON.stringify(didDocument, null, 2))
+        }
         // 2. set HTTP response code
         if (didResolutionMetadata.error === 'notFound') {
           console.info(`\n🔍 DID ${did} not found (on chain)`)
@@ -51,25 +54,22 @@ async function start() {
             `${didResolutionMetadata.error}: ${didResolutionMetadata.errorMessage}`
           )
           res.status(400)
-        } else if (didDocument) {
-          console.info('\n↑↓ Resolved DID details:')
-          console.info(JSON.stringify(didDocument, null, 2))
-        }
-
-        if (didDocumentMetadata.deactivated) {
+        } else if (didDocumentMetadata.deactivated) {
+          console.info(`\n🔍 DID ${did} has been disabled`)
           // sending a 410 according to https://w3c-ccg.github.io/did-resolution/#bindings-https
           res.status(410)
         }
 
         // 3. build response according to requested MIME
-
-        // add json-ld contexts if json-ld is requested
+        // add json-ld contexts to DID document if json-ld is requested
         if (didDocument && isJsonLd) {
           didDocument['@context'] = [W3C_DID_CONTEXT_URL, KILT_DID_CONTEXT_URL]
         }
 
+        // create response body depending on MIME type
         let response
         if (responseContentType === DID_RESOLUTION_RESPONSE_MIME) {
+          // case A: DID resolution result
           response = {
             '@context': [DID_RESOLUTION_RESPONSE_CONTEXT],
             didDocument,
@@ -82,6 +82,7 @@ async function start() {
             }
           }
         } else {
+          // case B: DID document only
           response = didDocument
         }
 
