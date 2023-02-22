@@ -30,6 +30,9 @@ async function start() {
   driver.get(URI_DID, async (req, res) => {
     async function handleRequest(responseContentType) {
       const isJsonLd = responseContentType.includes('ld+json')
+      let didDocument = null
+      let didDocumentMetadata = {}
+      let didResolutionMetadata = {}
       // Catch-all for generic error 500
       try {
         console.log('--------------------')
@@ -38,8 +41,8 @@ async function start() {
         const { did } = req.params
 
         // 1. resolve DID
-        const { didDocument, didDocumentMetadata, didResolutionMetadata } =
-          await Did.resolveCompliant(did)
+        ;({ didDocument, didDocumentMetadata, didResolutionMetadata } =
+          await Did.resolveCompliant(did))
         if (didDocument) {
           console.info('\n↑↓ Resolved DID details:')
           console.info(JSON.stringify(didDocument, null, 2))
@@ -66,6 +69,20 @@ async function start() {
           didDocument['@context'] = [W3C_DID_CONTEXT_URL, KILT_DID_CONTEXT_URL]
         }
 
+        res.status(200)
+      } catch (error) {
+        console.error(
+          '\n🚨 Could not satisfy request because of the following error:'
+        )
+        console.error(`${error}`)
+        res.status(500)
+        didDocument = null
+        didDocumentMetadata = {}
+        didResolutionMetadata = {
+          error: 'internalError',
+          errorMessage: String(error)
+        }
+      } finally {
         // create response body depending on MIME type
         let response
         if (responseContentType === DID_RESOLUTION_RESPONSE_MIME) {
@@ -90,13 +107,6 @@ async function start() {
         console.info(JSON.stringify(response, null, 2))
 
         res.contentType(responseContentType).send(response)
-      } catch (error) {
-        console.error(
-          '\n🚨 Could not satisfy request because of the following error:'
-        )
-        console.error(`${error}`)
-        res.sendStatus(500)
-      } finally {
         console.log('--------------------')
       }
     }
