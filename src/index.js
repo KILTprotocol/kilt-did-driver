@@ -7,13 +7,8 @@
 
 const express = require('express')
 
-const { connect } = require('@kiltprotocol/core')
-const Did = require('@kiltprotocol/did')
+const { DidResolver, connect } = require('@kiltprotocol/sdk-js')
 
-const {
-  W3C_DID_CONTEXT_URL,
-  KILT_DID_CONTEXT_URL
-} = require('@kiltprotocol/did')
 const { PORT, BLOCKCHAIN_NODE, SHUTDOWN_GRACE_PERIOD } = require('./config')
 const {
   URI_DID,
@@ -26,13 +21,12 @@ const driver = express()
 async function start() {
   const api = await connect(BLOCKCHAIN_NODE)
 
+  const decoder = new TextDecoder()
+
   // URI_DID is imposed by the universal-resolver
   driver.get(URI_DID, async (req, res) => {
     async function handleRequest(responseContentType) {
-      const isJsonLd = responseContentType.includes('ld+json')
-      let didDocument = null
-      let didDocumentMetadata = {}
-      let didResolutionMetadata = {}
+      let response
       // Catch-all for generic error 500
       try {
         console.log('--------------------')
@@ -41,84 +35,96 @@ async function start() {
         const { did } = req.params
 
         // 1. resolve DID
-        ;({ didDocument, didDocumentMetadata, didResolutionMetadata } =
-          await Did.resolveCompliant(did))
-        if (didDocument) {
-          console.info('\n↑↓ Resolved DID details:')
-          console.info(JSON.stringify(didDocument, null, 2))
-          // expand VM references to full URI
-          ;[
-            'authentication',
-            'assertionMethod',
-            'capabilityDelegation',
-            'keyAgreement'
-          ].forEach((type) =>
-            didDocument[type]?.forEach((id, idx) => {
-              if (id.startsWith('#')) {
-                didDocument[type][idx] = didDocument.id + id
-              }
-            })
+        const {
+          didDocumentMetadata,
+          didResolutionMetadata,
+          didDocumentStream
+        } = await DidResolver.resolveRepresentation(did, {
+          accept:
+            responseContentType === DID_RESOLUTION_RESPONSE_MIME
+              ? 'application/did+ld+json'
+              : responseContentType
+        })
+        if (didDocumentStream) {
+          console.info(
+            `\n↑↓ Resolved DID resource as ${didResolutionMetadata.contentType}`
           )
+          if (didResolutionMetadata.contentType?.includes('json')) {
+            console.info(decoder.decode(didDocumentStream))
+          } else {
+            console.info(`0x${Buffer.from(didDocumentStream).toString('hex')}`)
+          }
         }
         // 2. set HTTP response code
-        if (didResolutionMetadata.error === 'notFound') {
-          console.info(`\n🔍 DID ${did} not found (on chain)`)
-          res.status(404)
-        } else if (didResolutionMetadata.error) {
-          console.error('\n⚠️ Could not resolve DID with given error:')
-          console.error(
-            `${didResolutionMetadata.error}: ${didResolutionMetadata.errorMessage}`
-          )
-          res.status(400)
+        if (didResolutionMetadata.error) {
+          switch (didResolutionMetadata.error) {
+            case 'invalidDid':
+              res.status(400)
+              break
+            case 'notFound':
+              res.status(404)
+              break
+            case 'representationNotSupported':
+              res.status(406)
+              break
+            case 'methodNotSupported':
+              res.status(501)
+              break
+            case 'internalError':
+            default:
+              res.status(500)
+          }
+          if (didResolutionMetadata.error === 'notFound') {
+            console.info(`\n🔍 DID ${did} not found (on chain)`)
+          } else {
+            console.error('\n⚠️ Could not resolve DID with given error:')
+            console.error(
+              `${didResolutionMetadata.error}: ${didResolutionMetadata.errorMessage}`
+            )
+          }
         } else if (didDocumentMetadata.deactivated) {
           console.info(`\n❌ DID ${did} has been disabled`)
           // sending a 410 according to https://w3c-ccg.github.io/did-resolution/#bindings-https
           res.status(410)
+        } else {
+          // set 200 status code
+          res.status(200)
         }
 
-        // 3. build response according to requested MIME
-        // add json-ld contexts to DID document if json-ld is requested
-        if (didDocument && isJsonLd) {
-          didDocument['@context'] = [W3C_DID_CONTEXT_URL, KILT_DID_CONTEXT_URL]
+        // create response body depending on MIME type
+        if (responseContentType === DID_RESOLUTION_RESPONSE_MIME) {
+          // case A: DID resolution result
+          response = {
+            '@context': [DID_RESOLUTION_RESPONSE_CONTEXT],
+            didDocument: didDocumentStream
+              ? JSON.parse(decoder.decode(didDocumentStream))
+              : null,
+            didDocumentMetadata,
+            didResolutionMetadata
+          }
+        } else {
+          // case B: DID document only
+          response = didDocumentStream ? Buffer.from(didDocumentStream) : null
         }
-
-        res.status(200)
       } catch (error) {
         console.error(
           '\n🚨 Could not satisfy request because of the following error:'
         )
         console.error(`${error}`)
         res.status(500)
-        didDocument = null
-        didDocumentMetadata = {}
-        didResolutionMetadata = {
-          error: 'internalError',
-          errorMessage: String(error)
+        response = {
+          didDocument: null,
+          didDocumentMetadata: {},
+          didResolutionMetadata: {
+            error: 'internalError',
+            errorMessage: String(error)
+          }
         }
       } finally {
-        // create response body depending on MIME type
-        let response
-        if (responseContentType === DID_RESOLUTION_RESPONSE_MIME) {
-          // case A: DID resolution result
-          response = {
-            '@context': [DID_RESOLUTION_RESPONSE_CONTEXT],
-            didDocument,
-            didDocumentMetadata,
-            didResolutionMetadata: {
-              ...didResolutionMetadata,
-              contentType: isJsonLd
-                ? 'application/did+ld+json'
-                : 'application/did+json'
-            }
-          }
-        } else {
-          // case B: DID document only
-          response = didDocument
-        }
-
-        console.info('\n← Responding with:')
-        console.info(JSON.stringify(response, null, 2))
-
+        console.info(
+          `\n← Responding with content type ${responseContentType} and body:`
+        )
+        console.info(JSON.stringify(response))
         res.contentType(responseContentType).send(response)
         console.log('--------------------')
       }
@@ -127,10 +133,11 @@ async function start() {
     res.format({
       [DID_RESOLUTION_RESPONSE_MIME]: () =>
         handleRequest(DID_RESOLUTION_RESPONSE_MIME),
-      'application/ld+json': () => handleRequest('application/did+ld+json'),
       'application/did+ld+json': () => handleRequest('application/did+ld+json'),
-      'application/json': () => handleRequest('application/did+json'),
       'application/did+json': () => handleRequest('application/did+json'),
+      'application/json': () => handleRequest('application/did+json'),
+      'application/did+cbor': () => handleRequest('application/did+cbor'),
+      'application/cbor': () => handleRequest('application/did+cbor'),
       default: () => {
         const message = `Not acceptable media type(s) ${req.headers.accept}`
         console.error(`Error: ${message}`)
