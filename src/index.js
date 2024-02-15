@@ -46,6 +46,19 @@ async function start() {
         if (didDocument) {
           console.info('\n↑↓ Resolved DID details:')
           console.info(JSON.stringify(didDocument, null, 2))
+          // expand VM references to full URI
+          ;[
+            'authentication',
+            'assertionMethod',
+            'capabilityDelegation',
+            'keyAgreement'
+          ].forEach((type) =>
+            didDocument[type]?.forEach((id, idx) => {
+              if (id.startsWith('#')) {
+                didDocument[type][idx] = didDocument.id + id
+              }
+            })
+          )
         }
         // 2. set HTTP response code
         if (didResolutionMetadata.error === 'notFound') {
