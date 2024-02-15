@@ -18,11 +18,9 @@
     }
   },
   "dependencies": {
-    "@kiltprotocol/core": "0.26.0",
-    "@kiltprotocol/did": "0.26.0",
+    "@kiltprotocol/sdk-js": "1.0.0-alpha.1",
     "dotenv": "^8.2.0",
-    "express": "^4.17.3",
-    "node-fetch": "^3.2.10"
+    "express": "^4.17.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^9.1.1",
@@ -35,7 +33,6 @@
     "eslint-plugin-jsdoc": "^30.1.0",
     "eslint-plugin-prettier": "^3.1.0",
     "husky": "^4.2.3",
-    "npm-registry-client": "^8.6.0",
     "prettier": "^2.0.5"
   }
 }

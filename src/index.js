@@ -7,38 +7,26 @@
 
 const express = require('express')
 
-const { init, connect } = require('@kiltprotocol/core')
-const Did = require('@kiltprotocol/did')
+const { DidResolver, connect } = require('@kiltprotocol/sdk-js')
 
 const { PORT, BLOCKCHAIN_NODE } = require('./config')
 const {
   URI_DID,
   DID_RESOLUTION_RESPONSE_MIME,
-  DID_DOC_CONTEXT,
-  KILT_DID_CONTEXT,
   DID_RESOLUTION_RESPONSE_CONTEXT
 } = require('./consts')
 
 const driver = express()
 
 async function start() {
-  await init({ address: BLOCKCHAIN_NODE })
-  const { api } = await connect()
+  await connect(BLOCKCHAIN_NODE)
 
-  const hasWeb3Names = () => !!api.consts.web3Names
-  const logWeb3NameSupport = () => {
-    console.info(
-      hasWeb3Names()
-        ? '🥳 Web3Names are available on this chain!'
-        : '👵 Web3Names are currently not available on this chain'
-    )
-  }
-  api.on('decorated', logWeb3NameSupport)
+  const decoder = new TextDecoder()
 
   // URI_DID is imposed by the universal-resolver
   driver.get(URI_DID, async (req, res) => {
     async function handleRequest(responseContentType) {
-      const isJsonLd = responseContentType.includes('ld+json')
+      let response
       // Catch-all for generic error 500
       try {
         console.log('--------------------')
@@ -46,94 +34,98 @@ async function start() {
         console.info(JSON.stringify(req.headers, null, 2))
         const { did } = req.params
 
-        const didResolutionResult = {
-          '@context': [DID_RESOLUTION_RESPONSE_CONTEXT],
-          didDocument: null,
-          didDocumentMetadata: {},
-          didResolutionMetadata: {
-            contentType: isJsonLd
+        // 1. resolve DID
+        const {
+          didDocumentMetadata,
+          didResolutionMetadata,
+          didDocumentStream
+        } = await DidResolver.resolveRepresentation(did, {
+          accept:
+            responseContentType === DID_RESOLUTION_RESPONSE_MIME
               ? 'application/did+ld+json'
-              : 'application/did+json'
-          }
-        }
-
-        let resolvedDidDetails
-        // Throws if the address is not a valid address
-        try {
-          resolvedDidDetails = await Did.resolveDoc(did)
-          if (!resolvedDidDetails) {
-            console.info(`\n🔍 DID ${did} not found (on chain)`)
-            didResolutionResult.didResolutionMetadata.error = 'notFound'
-            didResolutionResult.didResolutionMetadata.errorMessage = `DID ${did} not found (on chain)`
-            res.status(404)
+              : responseContentType
+        })
+        if (didDocumentStream) {
+          console.info(
+            `\n↑↓ Resolved DID resource as ${didResolutionMetadata.contentType}`
+          )
+          if (didResolutionMetadata.contentType?.includes('json')) {
+            console.info(decoder.decode(didDocumentStream))
           } else {
-            console.info('\n↑↓ Resolved DID details:')
-            console.info(JSON.stringify(resolvedDidDetails, null, 2))
-            didResolutionResult.didDocumentMetadata =
-              resolvedDidDetails.metadata
+            console.info(`0x${Buffer.from(didDocumentStream).toString('hex')}`)
           }
-        } catch (error) {
-          console.error('\n⚠️ Could not resolve DID with given error:')
-          console.error(`${error}`)
-          didResolutionResult.didResolutionMetadata.error = 'invalidDidUrl'
-          didResolutionResult.didResolutionMetadata.errorMessage = error.message
-          res.status(400)
         }
-
-        // In case the DID has been deactivated, we return the minimum set of information,
-        // which is represented by the sole `id` property.
-        // https://www.w3.org/TR/did-core/#did-document-properties
-        if (didResolutionResult.didDocumentMetadata.deactivated) {
+        // 2. set HTTP response code
+        if (didResolutionMetadata.error) {
+          switch (didResolutionMetadata.error) {
+            case 'invalidDid':
+              res.status(400)
+              break
+            case 'notFound':
+              res.status(404)
+              break
+            case 'representationNotSupported':
+              res.status(406)
+              break
+            case 'methodNotSupported':
+              res.status(501)
+              break
+            case 'internalError':
+            default:
+              res.status(500)
+          }
+          if (didResolutionMetadata.error === 'notFound') {
+            console.info(`\n🔍 DID ${did} not found (on chain)`)
+          } else {
+            console.error('\n⚠️ Could not resolve DID with given error:')
+            console.error(
+              `${didResolutionMetadata.error}: ${didResolutionMetadata.errorMessage}`
+            )
+          }
+        } else if (didDocumentMetadata.deactivated) {
+          console.info(`\n❌ DID ${did} has been disabled`)
           // sending a 410 according to https://w3c-ccg.github.io/did-resolution/#bindings-https
           res.status(410)
-          didResolutionResult.didDocument = {
-            id: did
-          }
-          if (isJsonLd) {
-            didResolutionResult.didDocument['@context'] = [DID_DOC_CONTEXT]
-          }
-        } else if (resolvedDidDetails && resolvedDidDetails.details) {
-          didResolutionResult.didDocument = Did.exportToDidDocument(
-            resolvedDidDetails.details,
-            isJsonLd ? 'application/ld+json' : 'application/json'
-          )
-          // TODO: This will be added by the SDK automatically once support for the new context is added (most likely 0.30.x).
-          didResolutionResult.didDocument['@context'].push(KILT_DID_CONTEXT)
-
-          if (
-            hasWeb3Names() &&
-            resolvedDidDetails.details instanceof Did.FullDidDetails
-          ) {
-            // check for web3name
-            console.info(`\n🔍 Performing Web3Name lookup for ${did}`)
-            const w3n = await Did.Web3Names.queryWeb3NameForDid(did)
-            if (w3n) {
-              console.info(`   🦸 DID is associated with Web3Name "${w3n}"`)
-              didResolutionResult.didDocument.alsoKnownAs = [`w3n:${w3n}`]
-            } else {
-              console.info(
-                `   ❌ DID is not currently associated with a Web3Name`
-              )
-            }
-          }
+        } else {
+          // set 200 status code
+          res.status(200)
         }
 
-        const response =
-          responseContentType === DID_RESOLUTION_RESPONSE_MIME
-            ? didResolutionResult
-            : didResolutionResult.didDocument
-
-        console.info('\n← Responding with:')
-        console.info(JSON.stringify(response, null, 2))
-
-        res.contentType(responseContentType).send(response)
+        // create response body depending on MIME type
+        if (responseContentType === DID_RESOLUTION_RESPONSE_MIME) {
+          // case A: DID resolution result
+          response = {
+            '@context': [DID_RESOLUTION_RESPONSE_CONTEXT],
+            didDocument: didDocumentStream
+              ? JSON.parse(decoder.decode(didDocumentStream))
+              : null,
+            didDocumentMetadata,
+            didResolutionMetadata
+          }
+        } else {
+          // case B: DID document only
+          response = didDocumentStream ? Buffer.from(didDocumentStream) : null
+        }
       } catch (error) {
         console.error(
           '\n🚨 Could not satisfy request because of the following error:'
         )
         console.error(`${error}`)
-        res.sendStatus(500)
+        res.status(500)
+        response = {
+          didDocument: null,
+          didDocumentMetadata: {},
+          didResolutionMetadata: {
+            error: 'internalError',
+            errorMessage: String(error)
+          }
+        }
       } finally {
+        console.info(
+          `\n← Responding with content type ${responseContentType} and body:`
+        )
+        console.info(JSON.stringify(response))
+        res.contentType(responseContentType).send(response)
         console.log('--------------------')
       }
     }
@@ -141,10 +133,11 @@ async function start() {
     res.format({
       [DID_RESOLUTION_RESPONSE_MIME]: () =>
         handleRequest(DID_RESOLUTION_RESPONSE_MIME),
-      'application/ld+json': () => handleRequest('application/did+ld+json'),
       'application/did+ld+json': () => handleRequest('application/did+ld+json'),
-      'application/json': () => handleRequest('application/did+json'),
       'application/did+json': () => handleRequest('application/did+json'),
+      'application/json': () => handleRequest('application/did+json'),
+      'application/did+cbor': () => handleRequest('application/did+cbor'),
+      'application/cbor': () => handleRequest('application/did+cbor'),
       default: () => {
         const message = `Not acceptable media type(s) ${req.headers.accept}`
         console.error(`Error: ${message}`)
@@ -157,7 +150,6 @@ async function start() {
     console.info(
       `🚀 KILT DID resolver driver running on port ${PORT} and connected to ${BLOCKCHAIN_NODE}...`
     )
-    logWeb3NameSupport()
   })
 }
 

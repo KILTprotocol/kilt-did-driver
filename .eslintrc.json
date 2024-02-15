@@ -4,9 +4,12 @@
       "es6": true,
       "node": true
   },
+  "parserOptions": {
+    "ecmaVersion": 2020
+  },
   "extends": [
     "airbnb-base",
-    "prettier"
+    "plugin:prettier/recommended"
   ],
   "rules": {
     "no-console": "off",
