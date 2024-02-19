@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM node:20-alpine
 # Some tools required when using alpine -> https://github.com/nodejs/docker-node/issues/282#issue-193774074
 RUN apk add --no-cache --virtual .gyp python3 make g++
 
