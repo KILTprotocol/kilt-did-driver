@@ -1,21 +1,32 @@
-FROM node:20-alpine
-# Some tools required when using alpine -> https://github.com/nodejs/docker-node/issues/282#issue-193774074
+FROM node:20-alpine as base
+
+WORKDIR /app
+
+
+FROM base as builder
+# Some tools required when using alpine -> https://github.com/nod# ejs/docker-node/issues/282#issue-193774074
 RUN apk add --no-cache --virtual .gyp python3 make g++
 
 ARG NODE_AUTH_TOKEN=""
 
-WORKDIR /app
-
 COPY package.json yarn.lock ./
 
-RUN yarn install --production
+RUN yarn install
 
 # From https://github.com/nodejs/docker-node/issues/282#issue-193774074 (same as above)
 RUN apk del .gyp
-
-EXPOSE 8080
-
 # copy source after installing dependencies for better caching
 COPY . .
 
-CMD [ "node", "src/index.js" ]
+RUN yarn bundle
+
+
+FROM base as release
+
+ENV NODE_ENV production
+
+# carry over the built code
+COPY --from=builder /app/dist/index.js /app/.env /app/package.json /app/LICENSE /app/README.md ./
+
+EXPOSE 8080
+CMD [ "node", "index.js" ]
