@@ -146,13 +146,18 @@ async function start() {
   })
 
   // graceful shutdown: stop accepting new requests -> wait for running requests to be completed -> close api connection and exit
+  function shutdown(signal) {
+    console.log(`${signal} signal received: closing HTTP server`)
   process.on('SIGTERM', () => {
     console.log('SIGTERM signal received: closing HTTP server')
     server.close(() => {
       console.log('HTTP server closed, closing api connection')
       api.disconnect().then(() => console.log('api connection closed'))
     })
-  })
+  }
+  process.on('SIGTERM', shutdown)
+  process.on('SIGINT', shutdown)
+  process.on('SIGQUIT', shutdown)
 }
 
 start()
