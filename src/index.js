@@ -148,9 +148,14 @@ async function start() {
   // graceful shutdown: stop accepting new requests -> wait for running requests to be completed -> close api connection and exit
   function shutdown(signal) {
     console.log(`${signal} signal received: closing HTTP server`)
-  process.on('SIGTERM', () => {
-    console.log('SIGTERM signal received: closing HTTP server')
+    const timeout = setTimeout(() => {
+      console.warn(
+        'timeout for pending requests, force-closing open connections'
+      )
+      server.closeAllConnections()
+    }, 5000).unref()
     server.close(() => {
+      clearTimeout(timeout)
       console.log('HTTP server closed, closing api connection')
       api.disconnect().then(() => console.log('api connection closed'))
     })
