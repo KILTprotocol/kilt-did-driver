@@ -24,7 +24,7 @@ const {
 const driver = express()
 
 async function start() {
-  await connect(BLOCKCHAIN_NODE)
+  const api = await connect(BLOCKCHAIN_NODE)
 
   // URI_DID is imposed by the universal-resolver
   driver.get(URI_DID, async (req, res) => {
@@ -139,10 +139,19 @@ async function start() {
     })
   })
 
-  driver.listen(PORT, () => {
+  const server = driver.listen(PORT, () => {
     console.info(
       `🚀 KILT DID resolver driver running on port ${PORT} and connected to ${BLOCKCHAIN_NODE}...`
     )
+  })
+
+  // graceful shutdown: stop accepting new requests -> wait for running requests to be completed -> close api connection and exit
+  process.on('SIGTERM', () => {
+    console.log('SIGTERM signal received: closing HTTP server')
+    server.close(() => {
+      console.log('HTTP server closed, closing api connection')
+      api.disconnect().then(() => console.log('api connection closed'))
+    })
   })
 }
 
