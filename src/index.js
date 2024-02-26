@@ -14,7 +14,7 @@ const {
   W3C_DID_CONTEXT_URL,
   KILT_DID_CONTEXT_URL
 } = require('@kiltprotocol/did')
-const { PORT, BLOCKCHAIN_NODE } = require('./config')
+const { PORT, BLOCKCHAIN_NODE, SHUTDOWN_GRACE_PERIOD } = require('./config')
 const {
   URI_DID,
   DID_RESOLUTION_RESPONSE_MIME,
@@ -24,7 +24,7 @@ const {
 const driver = express()
 
 async function start() {
-  await connect(BLOCKCHAIN_NODE)
+  const api = await connect(BLOCKCHAIN_NODE)
 
   // URI_DID is imposed by the universal-resolver
   driver.get(URI_DID, async (req, res) => {
@@ -139,11 +139,32 @@ async function start() {
     })
   })
 
-  driver.listen(PORT, () => {
+  const server = driver.listen(PORT, () => {
     console.info(
       `🚀 KILT DID resolver driver running on port ${PORT} and connected to ${BLOCKCHAIN_NODE}...`
     )
   })
+
+  // graceful shutdown: stop accepting new requests -> wait for running requests to be completed -> close api connection and exit
+  function shutdown(signal) {
+    console.log(`${signal} signal received: closing HTTP server`)
+    const timeout = setTimeout(() => {
+      console.warn(
+        `timeout for pending requests after ${
+          SHUTDOWN_GRACE_PERIOD / 1000
+        }s, force-closing open connections`
+      )
+      server.closeAllConnections()
+    }, SHUTDOWN_GRACE_PERIOD).unref()
+    server.close(() => {
+      clearTimeout(timeout)
+      console.log('HTTP server closed, closing api connection')
+      api.disconnect().then(() => console.log('api connection closed'))
+    })
+  }
+  process.on('SIGTERM', shutdown)
+  process.on('SIGINT', shutdown)
+  process.on('SIGQUIT', shutdown)
 }
 
 start()
