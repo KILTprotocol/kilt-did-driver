@@ -11,8 +11,11 @@ require('../envConfig')
 const BLOCKCHAIN_NODE = process.env.KILT_BLOCKCHAIN_NODE
 // server port
 const PORT = 8080
+// grace period in ms
+const SHUTDOWN_GRACE_PERIOD = 5000
 
 module.exports = Object.freeze({
   BLOCKCHAIN_NODE,
-  PORT
+  PORT,
+  SHUTDOWN_GRACE_PERIOD
 })
