@@ -9,7 +9,8 @@
   "scripts": {
     "lint": "eslint 'src/**'",
     "start": "node src/index.js",
-    "start:testnet": "env-cmd -f .env.testnet node src/index.js"
+    "start:testnet": "env-cmd -f .env.testnet node src/index.js",
+    "bundle": "esbuild src/index.js --platform=node --bundle --outfile=dist/index.js"
   },
   "husky": {
     "hooks": {
@@ -28,6 +29,7 @@
     "@commitlint/cli": "^9.1.1",
     "@commitlint/config-conventional": "^9.1.1",
     "env-cmd": "^10.1.0",
+    "esbuild": "^0.20.1",
     "eslint": "^7.5.0",
     "eslint-config-airbnb-base": "14.2.0",
     "eslint-config-prettier": "^6.0.0",
