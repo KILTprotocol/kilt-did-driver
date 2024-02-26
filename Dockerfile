@@ -11,7 +11,7 @@ ARG NODE_AUTH_TOKEN=""
 
 COPY package.json yarn.lock ./
 
-RUN yarn install
+RUN yarn install --immutable
 
 # From https://github.com/nodejs/docker-node/issues/282#issue-193774074 (same as above)
 RUN apk del .gyp
