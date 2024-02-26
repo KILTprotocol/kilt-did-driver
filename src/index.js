@@ -14,7 +14,7 @@ const {
   W3C_DID_CONTEXT_URL,
   KILT_DID_CONTEXT_URL
 } = require('@kiltprotocol/did')
-const { PORT, BLOCKCHAIN_NODE } = require('./config')
+const { PORT, BLOCKCHAIN_NODE, SHUTDOWN_GRACE_PERIOD } = require('./config')
 const {
   URI_DID,
   DID_RESOLUTION_RESPONSE_MIME,
@@ -150,10 +150,12 @@ async function start() {
     console.log(`${signal} signal received: closing HTTP server`)
     const timeout = setTimeout(() => {
       console.warn(
-        'timeout for pending requests, force-closing open connections'
+        `timeout for pending requests after ${
+          SHUTDOWN_GRACE_PERIOD / 1000
+        }s, force-closing open connections`
       )
       server.closeAllConnections()
-    }, 5000).unref()
+    }, SHUTDOWN_GRACE_PERIOD).unref()
     server.close(() => {
       clearTimeout(timeout)
       console.log('HTTP server closed, closing api connection')
