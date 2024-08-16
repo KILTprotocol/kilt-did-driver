@@ -9,7 +9,7 @@
   },
   "extends": [
     "airbnb-base",
-    "plugin:prettier/recommended"
+    "prettier"
   ],
   "rules": {
     "no-console": "off",
