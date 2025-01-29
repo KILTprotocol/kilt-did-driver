@@ -418,10 +418,10 @@
     "@polkadot/util-crypto" "^13.0.2"
     "@scure/base" "^1.1.1"
 
-"@kiltprotocol/type-definitions@^1.11200.0":
-  version "1.11200.0"
-  resolved "https://registry.yarnpkg.com/@kiltprotocol/type-definitions/-/type-definitions-1.11200.0.tgz#58f6dd9ae09925d6f46189f6b1ecef78b38cdd24"
-  integrity sha512-S99koF1rLqPyOkOTcs+6mWm/HOPxfSipd1F8A77SdNyum1mKT0Vc0bqZzfIBCJdOHV4r2foEZlTRT7JA1WjEuA==
+"@kiltprotocol/type-definitions@1.11501.0-peregrine", "@kiltprotocol/type-definitions@^1.11200.0":
+  version "1.11501.0-peregrine"
+  resolved "https://registry.yarnpkg.com/@kiltprotocol/type-definitions/-/type-definitions-1.11501.0-peregrine.tgz#d2a6d0c9d6b10f795421154259f420d722a66403"
+  integrity sha512-ZjO2lnlppdECH5Ix5FDrQvxMlqvr9wPtYfiNQ9sb7pn6dslSY6xlBwKMl0BlokdyIE4HGVLI0AiDz6av/MloAA==
 
 "@kiltprotocol/types@0.100.0":
   version "0.100.0"
