@@ -1,6 +1,3 @@
-[![](https://user-images.githubusercontent.com/39338561/122415864-8d6a7c00-cf88-11eb-846f-a98a936f88da.png)
-](https://kilt.io)
-
 # KILT Universal DID Resolver Driver
 
 This repository contains the KILT driver source code for the [DIF Universal Resolver](https://github.com/decentralized-identity/universal-resolver).
