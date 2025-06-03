@@ -1,6 +1,6 @@
 {
   "name": "kilt-did-driver",
-  "version": "2.5.0",
+  "version": "3.0.0",
   "main": "src/index.js",
   "repository": "https://github.com/KILTprotocol/kilt-did-driver.git",
   "author": "KILT <info@kilt.io>",
